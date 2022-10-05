@@ -10,4 +10,8 @@ def create_app():
     def index():
         return 'Hello, World!'
 
+    # Apply api blueprint, accessed through '/api' prefix
+    from api import api_bp
+    app.register_blueprint(api_bp)
+
     return app
