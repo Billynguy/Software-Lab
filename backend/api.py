@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from login import login_bp
 from project_selection import project_selection_bp
+from project_page import project_page_bp
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 """Blueprint for all api-related routes.
@@ -41,3 +42,4 @@ def _post_test():
 # Apply other modular blueprints within the api blueprint
 api_bp.register_blueprint(login_bp)
 api_bp.register_blueprint(project_selection_bp)
+api_bp.register_blueprint(project_page_bp)
