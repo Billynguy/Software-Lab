@@ -35,5 +35,7 @@ def _post_test():
         </form>
         '''
 
+
 # Apply other modular blueprints within the api blueprint
-# api_bp.register_blueprint(module_bp)
+from login import login_bp
+api_bp.register_blueprint(login_bp)
