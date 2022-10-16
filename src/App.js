@@ -10,46 +10,6 @@ import HWSet from './components/ProjectPage/HWSet';
 // ----------------- End Project Page Imports ---------------
 
 
-// function HWSet(props){
-//   return(
-//     <>
-//         <div className="pHWSet">
-//             <p>HWSet1: {props.qty1}/100
-//                 <TextField id="filled-basic" label="Enter qty" variant="filled" />
-//                 <Button variant="contained">CHECK IN</Button>
-//                 <Button variant="contained">CHECK OUT</Button>
-//             </p>
-//             <p>HWSet2: {props.qty2}/100
-//                 <TextField id="filled-basic" label="Enter qty" variant="filled" />
-//                 <Button variant="contained">CHECK IN</Button>
-//                 <Button variant="contained">CHECK OUT</Button>
-//             </p>
-            
-//         </div>
-//         <div className="joinLeaveButton">
-//             <JoinLeave />
-//         </div>
-//     </>
-// )
-// }
-
-// function Project(props){
-//   return(
-//     <div className="mt-5 d-flex justify-content-left">
-//         {/* <Box color="black" bgcolor="lightgray" p={1}> */}
-//           <div className = "proj">
-//             <h2>{props.name}</h2>
-//             <div className = "authusers">
-//               <p>list, of, authorized, users</p> <HWSet qty1 = {props.qty1} qty2= {props.qty2}/>
-//             </div>
-            
-//           </div>  
-                 
-            
-//         {/* </Box> */}
-//     </div>
-// )
-// }
 
 class Projects extends React.Component {
   render() {
