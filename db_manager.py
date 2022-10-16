@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
+from typing import Optional
 
 
 # For the purposes of our Flask app, we probably only need a singleton access.
@@ -8,6 +9,18 @@ class DBManager:
     """Manager for a connection to our database system.
     In this case, MongoDB.
     """
+
+    __singleton = None
+
+    @classmethod
+    def get_instance(cls) -> 'DBManager':
+        """Get the singleton instance.
+        This instance should be closed only on exit.
+        """
+        if cls.__singleton is None:
+            cls.__singleton = DBManager()
+
+        return cls.__singleton
 
     def __init__(self):
         """Connect to a MongoDB server and obtain collections.
@@ -38,6 +51,24 @@ class DBManager:
 
     def get_hwsets_collection(self) -> Collection:
         return self.__hwsets_collection
+
+    """These accessor methods are more specific.
+    """
+    def insert_user_document(self, user_document: dict) -> bool:
+        """Attempt to insert a user document.
+        Will fail if there is an existing user document with the same userid.
+        """
+
+        if self.get_user_document_by_id(user_document['userid']) is not None:
+            return False
+
+        self.__users_collection.insert_one(user_document)
+        return True
+
+    def get_user_document_by_id(self, userid: str) -> Optional[dict]:
+        return self.__users_collection.find_one({
+            'userid': userid
+        })
 
     """We can use DBManager as a contextmanager,
     but we will probably only do so for one-off operations.

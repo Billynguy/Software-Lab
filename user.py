@@ -1,19 +1,22 @@
 from typing import Optional
+from db_manager import DBManager
 
 
 class User:
     """Back-end representation of a user.
+    A User object can go out of sync especially in concurrent situations.
+    Therefore, the object should be used only temporarily.
     """
 
     def __init__(self):
         """Client code should not directly call the constructor.
         Rather, client code should prefer the static `new_user` and `load_user` methods.
         """
-        self._username: str = ''
-        self._userid: str = ''
-        self._password: str = ''
-        self._projects: list[str] = []
-        """This is a set of project ids."""
+        self.__username: str = ''
+        self.__userid: str = ''
+        self.__password: str = ''
+        self.__projects: list[str] = []
+        """This is a list of project ids."""
 
     @staticmethod
     def new_user(username: str, userid: str, password: str) -> Optional['User']:
@@ -29,15 +32,19 @@ class User:
         Returns: User object representing the newly created user, None if another user with the same user id exists
 
         """
-        # Check that another user with the same userid does not exist
-        # if userid in user_collection:
-        #     return None
 
         user = User()
         user._username = username
         user._userid = userid
         user._password = password
-        return user
+
+        user_doc = user.__pack_dict()
+
+        # Check that another user with the same userid does not exist
+        if DBManager.get_instance().insert_user_document(user_doc):
+            return user
+
+        return None
 
     @staticmethod
     def load_user(userid: str) -> Optional['User']:
@@ -51,56 +58,25 @@ class User:
         Returns: User object represented by the user id, None if no such user exists
 
         """
-        # if userid in user_collection:
-        #     return user_collection.get_user(userid)
 
-        # return None
-        raise NotImplementedError()
+        user_doc = DBManager.get_instance().get_user_document_by_id(userid)
+        if user_doc is None:
+            return None
+
+        user_obj = User()
+        user_obj.__unpack_dict(user_doc)
+        return user_obj
 
     def get_projects(self) -> list[str]:
-        """Return a set of projects the user has access to.
-        This set is a copy so that client code cannot modify the internal set
+        """Return a list of projects the user has access to.
+        This list is a copy so that client code cannot modify the internal list
 
-        Returns: A copy of the projects set
-
-        """
-        return self._projects.copy()
-
-    def create_project(self, name: str, description: str) -> None:
-        """Have the user create a new project.
-        The user will become the project's manager.
-
-        Args:
-            name: Project name of the new project
-            description: Project description of the new project
+        Returns: A copy of the projects list
 
         """
-        # This method might not be needed if the Project is created in the Project class
-        # May return a Project object
+        return self.__projects.copy()
 
-        # Call a static create project method in Project class
-        # self._projects.append(project.get_id())
-        raise NotImplementedError()
-
-    def authorize_user(self, projectid: str, userid: str) -> bool:
-        """Authorize another user to access a project.
-        Both projectid and userid must refer to a valid project and user respectively.
-        The current user invoking authorize_user must have permission to do so.
-
-        Args:
-            projectid: Project id that the calling user must have admin access for
-            userid: User id of a user that the calling user is authorizing
-
-        Returns: True if successful, False otherwise
-
-        """
-        # This method might not be needed if the Project class implements an authorize_user class
-        # May use exceptions instead if it is expected that client code validates parameters
-
-        # Call an authorize user method in the Project object
-        raise NotImplementedError
-
-    def add_project(self, projectid: str) -> bool:
+    def _add_project(self, projectid: str) -> bool:
         """Add a project to the list the user has access to.
         Note: This method should not be called directly by the client since it does not actually grant the user access.
         Instead, the Project object should add the user to its authorized list and call this method on the user.
@@ -111,11 +87,29 @@ class User:
         Returns: True if successful, False otherwise
 
         """
-        existed = projectid in self._projects
+        existed = projectid in self.__projects
         if not existed:
-            self._projects.append(projectid)
+            self.__projects.append(projectid)
 
         return not existed
+
+    def __pack_dict(self) -> dict:
+        """Form a dict to insert into the database.
+        """
+        return {
+            'username': self.__username,
+            'userid': self.__userid,
+            'password': self.__password,
+            'projects': self.__projects,
+        }
+
+    def __unpack_dict(self, user_dict: dict) -> None:
+        """Retrieve information from a dict stored in the database.
+        """
+        self.__username = user_dict['username']
+        self.__userid = user_dict['userid']
+        self.__password = user_dict['password']
+        self.__projects = user_dict['projects']
 
 
 # Example client code
@@ -124,25 +118,13 @@ if __name__ == '__main__':
     print(f'Created new User: {my_user}')
 
     print(f'No projects: {my_user.get_projects()}')
-    print(f'Adding a project: {my_user.add_project("pj123")}')
+    print(f'Adding a project: {my_user._add_project("pj123")}')
     print(f'One project: {my_user.get_projects()}')
-    print(f'Adding same project: {my_user.add_project("pj123")}')
+    print(f'Adding same project: {my_user._add_project("pj123")}')
     print(f'One project: {my_user.get_projects()}')
 
     try:
         print('User.load_user is not implemented')
         my_user_again = User.load_user('jd123')
-    except NotImplementedError as e:
-        pass
-
-    try:
-        print('User.create_project is not implemented')
-        my_user.create_project('My project', "John Doe's project")
-    except NotImplementedError as e:
-        pass
-
-    try:
-        print('User.authorize_user is not implemented')
-        my_user.authorize_user('pj123', 'ab456')
     except NotImplementedError as e:
         pass
