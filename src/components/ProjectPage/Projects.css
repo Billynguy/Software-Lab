@@ -1,0 +1,61 @@
+.pHWSet{
+    position: relative;
+    left: auto;
+    bottom: 100px;
+    width: auto;
+    
+
+}
+
+.joinLeaveButton{
+    position: relative;
+    left: auto;
+    float: right;
+}
+.proj{
+    background-color: lightgray;
+    margin: 5px;
+    width: auto;
+    border: 3px solid black;
+    border-radius: 15px;
+    position: relative;
+}
+.authorizedusers{
+    margin: 1px;
+    width: auto;
+    /* border: 3px solid green; */
+    position: relative;
+    left: auto;
+    top: 50px;
+}
+
+.checkInOut{
+    position: relative;
+    width: auto;
+    display: flex;
+}
+.hwSetInstance{
+    position: relative;
+    width: auto;
+    left: 40%;
+    top: 50px;
+}
+
+
+.row{
+    margin-top: 10%;
+    margin-left: 2%;
+    margin-right: 2%;
+    display: flex;
+    justify-content: space-between;
+
+}
+.proj-col{
+    flex-basis: 31%;
+    background: #fff3f3;
+    border-radius: 10px;
+    margin-bottom: 5%;
+    padding: 20px 12px;
+    box-sizing: border-box;
+    transition: 0.5s;
+}
