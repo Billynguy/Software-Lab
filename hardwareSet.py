@@ -1,81 +1,157 @@
-import connector
-from datetime import datetime
+from typing import Optional
+from db_manager import DBManager
 
 
 class HWSet:
-    # Constructor
-    def __init__(self, name, qty):
-        c = connector.Connector("HWSet")
-        document = {
-            'name': name,
-            'capacity': qty,
-            'availability': qty,
-            'projects': {"100": 0, "101": 0},
-            'updated': datetime.now()
+    """Back-end representation of hardware sets
+    A Hardware Set object can go out of sync especially in concurrent situations.
+    Therefore, the object should be used only temporarily.
+    """
+
+    def __init__(self):
+        """Client code should NOT directly call the constructor.
+        Rather, client code should prefer the static 'new_project' and 'load_project' methods.
+        """
+        self.__name: str = ''
+        self.__capacity: int = ''
+        self.__availability: int = ''
+        self.__projects: list[dict] = []
+        """This is a list of projects the hardware sets is renting out to"""
+
+    @staticmethod
+    def new_hwset(name: str, capacity: int) -> Optional['HWSets']:
+        """Create and return a new hardware set with the given parameters.
+        Client code should use this static method instead of calling the constructor when creating a new hardware set.
+        Fails if another hardware set with the same name exists.
+        Args:
+            name: name of the hardware set
+            capacity: max amount a hardware set can hold
+        Returns: HWSet object representing the newly created set, None if another HWSet with the same name exists
+        """
+        hwset = HWSet()
+        hwset.__name = name
+        hwset.__capacity = capacity
+        hwset.__availability = capacity
+
+        hwset_doc = hwset.__packdict()
+
+        # Check that another hwset with the same hwset does not exist
+        if DBManager.get_instance().insert_hwset_document(hwset_doc):
+            return hwset
+
+        return None
+
+    @staticmethod
+    def load_hwset(name: str) -> Optional['HWSet']:
+        """Load a HWSet object from its name.
+        Client code should use this static method instead of calling the constructor when loading a hwset.
+        Fails if there is hwset with the name.
+        Args:
+            name: name of the hwset to load
+        Returns: HWSet object represented by the name, None if no such hwset exists
+        """
+        hwset_doc = DBManager.get_instance().get_hwset_document_by_name(name)
+        if hwset_doc is None:
+            return None
+
+        hwset_obj = HWSet()
+        hwset_obj.__unpack_dict(hwset_doc)
+        return hwset_obj
+
+    def __pack_dict(self) -> dict:
+        """Form a dict to insert into the database.
+        """
+        return {
+            'name': self.__name,
+            'capacity': self.__capacity,
+            'availability': self.__availability,
+            'projects': self.__projects
         }
-        c.collection.insert_one(document)
-        c.terminate()
-        return
 
-    # Getters
-    @staticmethod
-    def get_names():
-        c = connector.Connector("HWSet")
-        names = []
-        for x in c.collection.find({}, {"_id": 0, "name": 1}):
-            names.append(x.get('name'))
-        c.terminate()
-        return names
+    def __unpack_dict(self, hwset_dict) -> None:
+        """Retrieve information from a dict stored in the database.
+        """
+        self.__name: hwset_dict['name']
+        self.__capacity: hwset_dict['capacity']
+        self.__availability: hwset_dict['availability']
+        self.__projects: hwset_dict['projects']
 
-    @staticmethod
-    def get_capacity(hwset):
-        c = connector.Connector("HWSet")
-        capacity = c.collection.find_one({'name': hwset}, {'_id': 0, 'capacity': 1})
-        c.terminate()
-        return capacity.get('capacity')
+    def get_projects(self) -> list[dict]:
+        """Return a list of projects that is renting out from this hardware set
+        This list is a copy so that client code cannot modify the internal list
+        Returns: A copy of projects list
+        """
+        return self.__projects.copy()
 
-    @staticmethod
-    def get_availability(hwset):
-        c = connector.Connector("HWSet")
-        availability = c.collection.find_one({'name': hwset}, {'_id': 0, 'availability': 1})
-        c.terminate()
-        return availability.get('availability')
+    def check_out(self, projectid: str, quantity: int):
+        """Add/modify the project, and it's total quantity in the hardware set.
+        Subtract the quantity that is being checked out with hardware set's availability.
+        Add/modify the hardware set to the project's hwsets list.
+        Args:
+            projectid: project that is checking out
+            quantity: amount to be checked out
+        Returns: True if there is enough availability, False if there is not enough availability
+        """
+        pass
+    #         # Checks if qty is > availability, if so deny the transaction
+    #         availability = HWSet.get_availability(hwset)
+    #         if amount > availability:
+    #             print("Too much! Do less!")
+    #             return False
+    #         # There is availability! Give it to them
+    #         else:
+    #             projects = HWSet.get_checkedout_list(hwset)
+    #             for x in projects:
+    #                 if x == pid:
+    #                     to_rent = amount + projects.get(pid)
+    #                     break
+    #             else:
+    #                 to_rent = amount
+    #             projects[pid] = to_rent
+    #             c = connector.Connector("HWSet")
+    #             myquery = {"name": hwset}
+    #             newvalues = {"$set": {"projects": projects, "updated": datetime.now()}}
+    #             c.collection.update_one(myquery, newvalues)
+    #             newvalues = {"$inc": {"availability": -amount}}
+    #             c.collection.update_one(myquery, newvalues)
+    #             c.terminate()
+    #             return True
 
-    @staticmethod
-    def get_checkedout_list(hwset):
-        c = connector.Connector("HWSet")
-        projects = c.collection.find_one({'name': hwset}, {'_id': 0, 'projects': 1})
-        c.terminate()
-        return projects.get('projects')
-
-    # NEED TO FINISH!
-    # Checks out resources
-    @staticmethod
-    def check_out(hwset, pid, amount):
-        # Checks if qty is > availability, if so deny the transaction
-        capacity = HWSet.get_capacity(hwset)
-        availability = HWSet.get_availability(hwset)
-        if amount > availability:
-            print("Too much! Do less!")
-            return -1
-        # There is availability! Give it to them
-        else:
-            availability -= amount
-            c = connector.Connector("HWSet")
-            myquery = {"name": hwset}
-            newvalues = {"$set": {"availability": availability, "updated": datetime.now()}}
-            c.collection.update_one(myquery, newvalues)
-            projects = HWSet.get_checkedout_list()
-            # for x in projects:
-            #     if x == pid:
-
-
-        return
-
-    # NEED TO FINISH!
-    @staticmethod
-    # Checks in resources
-    def check_in(hwset, pid, qty):
-        # No error checking needed but maybe need to check if too much is given where capacity < availability
-
-        return
+    def check_in(self, projectid: str, quantity: int):
+        """Remove/modify the project, and it's total quantity in the hardware set.
+        Add the quantity that is being checked in with hardware set's availability.
+        Remove/modify the hardware set to the project's hwsets list.
+        Args:
+            projectid: project that is checking in
+            quantity: amount to be checked in
+        Returns: True if availability <= capacity and resources was successfully checked in, False otherwise
+        """
+        pass
+    #         capacity = HWSet.get_capacity(hwset)
+    #         availability = HWSet.get_availability(hwset)
+    #         projects = HWSet.get_checkedout_list(hwset)
+    #         for x in projects:
+    #             if x == pid:
+    #                 rented = projects.get(pid)
+    #                 break
+    #         else:
+    #             print("NOT FOUND")
+    #             return False
+    #         if amount > rented:
+    #             print("TOO MUCH, YOU HAVE LESS!")
+    #             return False
+    #         else:
+    #             availability += amount
+    #             if availability > capacity:
+    #                 print("AVAILABILITY EXCEEDED CAPACITY!")
+    #                 return False
+    #             else:
+    #                 projects[pid] = rented-amount
+    #                 c = connector.Connector("HWSet")
+    #                 myquery = {"name": hwset}
+    #                 newvalues = {"$set": {"projects": projects, "updated": datetime.now()}}
+    #                 c.collection.update_one(myquery, newvalues)
+    #                 newvalues = {"$inc": {"availability": amount}}
+    #                 c.collection.update_one(myquery, newvalues)
+    #                 c.terminate()
+    #         return True

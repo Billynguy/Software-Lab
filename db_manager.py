@@ -26,7 +26,7 @@ class DBManager:
         """Connect to a MongoDB server and obtain collections.
         The connection should be `close`'d if directly constructed.
         """
-        self.__client: MongoClient = MongoClient('mongodb+srv://lphadmin:<password>@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
+        self.__client: MongoClient = MongoClient('mongodb+srv://lphadmin:MYAK1yMkhy8r6cZf@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
         self.__db: Database = self.__client['Cluster0']
         self.__users_collection: Collection = self.__db['Users']
         self.__projects_collection: Collection = self.__db['Projects']
@@ -69,6 +69,27 @@ class DBManager:
         return self.__users_collection.find_one({
             'userid': userid
         })
+
+    def insert_project_document(self, project_document:dict) -> bool:
+        """Attempt to insert a project document"""
+        self.__projects_collection.insert_one(project_document)
+        return True
+
+    def get_project_document_by_id(self, projectid: str) -> Optional[dict]:
+        return self.__projects_collection.find_one({
+            'projectid': projectid
+        })
+
+    def insert_hwset_document(self, hwset_document:dict) -> bool:
+        """Attempt to insert a HWSet document"""
+        self.__projects_collection.insert_one(hwset_document)
+        return True
+
+    def get_hwset_document_by_name(self, name: str) -> Optional[dict]:
+        return self.__hwsets_collection.find_one({
+            'name': name
+        })
+
 
     """We can use DBManager as a contextmanager,
     but we will probably only do so for one-off operations.
