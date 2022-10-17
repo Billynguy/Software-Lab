@@ -26,7 +26,7 @@ class DBManager:
         """Connect to a MongoDB server and obtain collections.
         The connection should be `close`'d if directly constructed.
         """
-        self.__client: MongoClient = MongoClient('mongodb+srv://lphadmin:MYAK1yMkhy8r6cZf@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
+        self.__client: MongoClient = MongoClient('mongodb+srv://lphadmin:<password>@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
         self.__db: Database = self.__client['Cluster0']
         self.__users_collection: Collection = self.__db['Users']
         self.__projects_collection: Collection = self.__db['Projects']
