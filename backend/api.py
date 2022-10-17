@@ -5,6 +5,7 @@ from project_page import project_page_bp
 from resource_page import resource_page_bp
 from user import user_bp
 from project import project_bp
+from resource import resource_bp
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 """Blueprint for all api-related routes.
@@ -49,3 +50,4 @@ api_bp.register_blueprint(project_page_bp)
 api_bp.register_blueprint(resource_page_bp)
 api_bp.register_blueprint(user_bp)
 api_bp.register_blueprint(project_bp)
+api_bp.register_blueprint(resource_bp)
