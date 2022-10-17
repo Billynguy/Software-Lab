@@ -1,7 +1,10 @@
-from flask import Blueprint, make_response
+from flask import Blueprint, make_response, session
 
 resource_bp = Blueprint('resource', __name__)
 """Blueprint for api requests related to resource information.
+"""
+
+"""Resource information.
 """
 
 

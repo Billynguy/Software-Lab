@@ -1,8 +1,42 @@
 from flask import Blueprint, redirect, make_response, session
 
 user_bp = Blueprint('user', __name__)
-"""Blueprint for api requests related to user information.
+"""Blueprint for api requests related to users.
 """
+
+"""User operations.
+"""
+
+
+@user_bp.post('/sign-in')
+def __user_sign_in():
+    """Sign in the user.
+
+    Verify that the sign-in information is valid.
+    :return: url redirection to the project selection page if valid or the sign-in page if invalid
+    """
+
+    # Verify that the sign-in information is valid
+    # if request.info in user_collection and user_document.matches(request.info):
+    #     session['userid'] = request.userid
+    #     return redirect('/projects')
+    return redirect('/login')
+
+
+@user_bp.post('/sign-up')
+def __user_sign_up():
+    """Sign up a new account.
+
+    Verify that the sign-up information is valid.
+    :return: url redirection to the project selection page if valid or the sign-up page if invalid
+    """
+
+    # Verify that the sign-up information is valid
+    # if request.info not in user_collection:
+    #     user_collection.add(create_user_document(request.info))
+    #     session['userid'] = request.userid
+    #     return redirect('/projects')
+    return redirect('/login')
 
 
 @user_bp.get('/sign-out')
@@ -15,6 +49,10 @@ def __user_sign_out():
 
     session.clear()
     return redirect('/login')
+
+
+"""User information.
+"""
 
 
 @user_bp.get('/user/<uuid:userid>/user-info')
