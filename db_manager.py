@@ -26,7 +26,7 @@ class DBManager:
         """Connect to a MongoDB server and obtain collections.
         The connection should be `close`'d if directly constructed.
         """
-        self.__client: MongoClient = MongoClient('mongodb+srv://lphadmin:MYAK1yMkhy8r6cZf@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
+        self.__client: MongoClient = MongoClient('mongodb+srv://lphadmin:<password>@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
         self.__db: Database = self.__client['Cluster0']
         self.__users_collection: Collection = self.__db['Users']
         self.__projects_collection: Collection = self.__db['Projects']
@@ -63,6 +63,17 @@ class DBManager:
             return False
 
         self.__users_collection.insert_one(user_document)
+        return True
+
+    def update_user_document_projects(self, user_document: dict) -> bool:
+        """Attempt to update a user's projects attribute
+        Will fail if there is no existing user document with the same user id"""
+        if self.get_user_document_by_id(user_document['userid']) is None:
+            return False
+
+        identifier = {'userid': user_document['userid']}
+        new_projects = {'$set': {'projects': user_document['projects']}}
+        self.__users_collection.update_one(identifier, new_projects)
         return True
 
     def get_user_document_by_id(self, userid: str) -> Optional[dict]:

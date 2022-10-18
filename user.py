@@ -34,9 +34,9 @@ class User:
         """
 
         user = User()
-        user._username = username
-        user._userid = userid
-        user._password = password
+        user.__username = username
+        user.__userid = userid
+        user.__password = password
 
         user_doc = user.__pack_dict()
 
@@ -51,12 +51,9 @@ class User:
         """Load a User object from its user id.
         Client code should use this static method instead of calling the constructor when loading a user.
         Fails if there is no user with the user id.
-
         Args:
             userid: User id of the user to load
-
         Returns: User object represented by the user id, None if no such user exists
-
         """
 
         user_doc = DBManager.get_instance().get_user_document_by_id(userid)
@@ -66,6 +63,9 @@ class User:
         user_obj = User()
         user_obj.__unpack_dict(user_doc)
         return user_obj
+
+    def get_userid(self) -> str:
+        return self.__userid
 
     def get_projects(self) -> list[str]:
         """Return a list of projects the user has access to.
@@ -90,8 +90,29 @@ class User:
         existed = projectid in self.__projects
         if not existed:
             self.__projects.append(projectid)
+            updated_user_doc = self.__pack_dict()
+            DBManager.get_instance().update_user_document_projects(updated_user_doc)
 
         return not existed
+
+    def _remove_project(self, projectid: str) -> bool:
+        """Remove a project to the list the user has access to.
+        Note: This method should not be called directly by the client since it does not actually remove the user access.
+        Instead, the Project object should remove the user to its authorized list and call this method on the user.
+
+        Args:
+            projectid: Project id that the user will remove access to
+
+        Returns: True if successful, False otherwise
+
+        """
+        existed = projectid in self.__projects
+        if existed:
+            self.__projects.remove(projectid)
+            updated_user_doc = self.__pack_dict()
+            DBManager.get_instance().update_user_document_projects(updated_user_doc)
+
+        return existed
 
     def __pack_dict(self) -> dict:
         """Form a dict to insert into the database.
@@ -116,15 +137,20 @@ class User:
 if __name__ == '__main__':
     my_user = User.new_user(username='John Doe', userid='jd123', password='password123')
     print(f'Created new User: {my_user}')
+    # my_user = User.load_user('jd123')
 
     print(f'No projects: {my_user.get_projects()}')
     print(f'Adding a project: {my_user._add_project("pj123")}')
     print(f'One project: {my_user.get_projects()}')
     print(f'Adding same project: {my_user._add_project("pj123")}')
     print(f'One project: {my_user.get_projects()}')
+    print(f'Removing project: {my_user._remove_project("pj123")}')
+    print(f'No projects: {my_user.get_projects()}')
+    print(f'Removing same project: {my_user._remove_project("pj123")}')
+    print(f'No projects: {my_user.get_projects()}')
 
     try:
-        print('User.load_user is not implemented')
+        # print('User.load_user is not implemented')
         my_user_again = User.load_user('jd123')
     except NotImplementedError as e:
         pass
