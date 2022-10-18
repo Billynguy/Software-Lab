@@ -26,7 +26,8 @@ class DBManager:
         """Connect to a MongoDB server and obtain collections.
         The connection should be `close`'d if directly constructed.
         """
-        self.__client: MongoClient = MongoClient('mongodb+srv://lphadmin:<password>@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
+        self.__client: MongoClient = MongoClient(
+            'mongodb+srv://lphadmin:<password>@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
         self.__db: Database = self.__client['Cluster0']
         self.__users_collection: Collection = self.__db['Users']
         self.__projects_collection: Collection = self.__db['Projects']
@@ -43,6 +44,7 @@ class DBManager:
     We should make specific accessor and modifier methods instead.
     Otherwise, client code needs to manage documents of these collections safely.
     """
+
     def get_users_collection(self) -> Collection:
         return self.__users_collection
 
@@ -54,6 +56,7 @@ class DBManager:
 
     """These accessor methods are more specific.
     """
+
     def insert_user_document(self, user_document: dict) -> bool:
         """Attempt to insert a user document.
         Will fail if there is an existing user document with the same userid.
@@ -65,15 +68,15 @@ class DBManager:
         self.__users_collection.insert_one(user_document)
         return True
 
-    def update_user_document_projects(self, user_document: dict) -> bool:
-        """Attempt to update a user's projects attribute
+    def update_user_document(self, user_document: dict, update_element: str) -> bool:
+        """Attempt to update a user's attribute
         Will fail if there is no existing user document with the same user id"""
         if self.get_user_document_by_id(user_document['userid']) is None:
             return False
 
         identifier = {'userid': user_document['userid']}
-        new_projects = {'$set': {'projects': user_document['projects']}}
-        self.__users_collection.update_one(identifier, new_projects)
+        update_data = {'$set': {update_element: user_document[update_element]}}
+        self.__users_collection.update_one(identifier, update_data)
         return True
 
     def get_user_document_by_id(self, userid: str) -> Optional[dict]:
@@ -81,24 +84,24 @@ class DBManager:
             'userid': userid
         })
 
-    def insert_project_document(self, project_document:dict) -> bool:
+    def insert_project_document(self, project_document: dict) -> bool:
         """Attempt to insert a project document
-        Will fail if there is an exisiting project with same projectid"""
+        Will fail if there is an existing project with same projectid"""
         if self.get_project_document_by_id(project_document['projectid']) is not None:
             return False
 
         self.__projects_collection.insert_one(project_document)
         return True
 
-    def update_project_document_users(self, project_document: dict) -> bool:
-        """Attempt to update a project's users attribute
+    def update_project_document(self, project_document: dict, update_element: str) -> bool:
+        """Attempt to update a project's attribute
         Will fail if there is no existing project document with the same project id"""
         if self.get_project_document_by_id(project_document['projectid']) is None:
             return False
 
         identifier = {'projectid': project_document['projectid']}
-        new_users = {'$set': {'users': project_document['users']}}
-        self.__projects_collection.update_one(identifier, new_users)
+        update_data = {'$set': {update_element: project_document[update_element]}}
+        self.__projects_collection.update_one(identifier, update_data)
         return True
 
     def get_project_document_by_id(self, projectid: str) -> Optional[dict]:
@@ -106,9 +109,32 @@ class DBManager:
             'projectid': projectid
         })
 
-    def insert_hwset_document(self, hwset_document:dict) -> bool:
+    def insert_hwset_document(self, hwset_document: dict) -> bool:
         """Attempt to insert a HWSet document"""
-        self.__projects_collection.insert_one(hwset_document)
+        self.__hwsets_collection.insert_one(hwset_document)
+        return True
+
+    def update_hwset_document(self, hwset_document: dict, update_element: str) -> bool:
+        """Attempt to update a hwset attribute
+        Will fail if there is no existing hwset document with the same name"""
+        if self.get_hwset_document_by_name(hwset_document['name']) is None:
+            return False
+
+        identifier = {'name': hwset_document['name']}
+        update_data = {'$set': {update_element: hwset_document[update_element]}}
+        self.__hwsets_collection.update_one(identifier, update_data)
+        return True
+
+    def update_hwset_document_multiple(self, hwset_document: dict, update_element1: str, update_element2: str) -> bool:
+        """Attempt to update a hwset attribute
+        Will fail if there is no existing hwset document with the same name"""
+        if self.get_hwset_document_by_name(hwset_document['name']) is None:
+            return False
+
+        identifier = {'name': hwset_document['name']}
+        update_data = {'$set': {update_element1: hwset_document[update_element1],
+                                update_element2: hwset_document[update_element2]}}
+        self.__hwsets_collection.update_one(identifier, update_data)
         return True
 
     def get_hwset_document_by_name(self, name: str) -> Optional[dict]:
@@ -116,10 +142,10 @@ class DBManager:
             'name': name
         })
 
-
     """We can use DBManager as a contextmanager,
     but we will probably only do so for one-off operations.
     """
+
     def __enter__(self) -> 'DBManager':
         return self
 

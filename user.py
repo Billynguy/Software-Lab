@@ -91,7 +91,7 @@ class User:
         if not existed:
             self.__projects.append(projectid)
             updated_user_doc = self.__pack_dict()
-            DBManager.get_instance().update_user_document_projects(updated_user_doc)
+            DBManager.get_instance().update_user_document(updated_user_doc, 'projects')
 
         return not existed
 
@@ -110,7 +110,7 @@ class User:
         if existed:
             self.__projects.remove(projectid)
             updated_user_doc = self.__pack_dict()
-            DBManager.get_instance().update_user_document_projects(updated_user_doc)
+            DBManager.get_instance().update_user_document(updated_user_doc, 'projects')
 
         return existed
 
@@ -135,7 +135,7 @@ class User:
 
 # Example client code
 if __name__ == '__main__':
-    my_user = User.new_user(username='Billy Nguyen', userid='bn123', password='password123')
+    my_user = User.new_user(username='Johnny B', userid='jb123', password='password123')
     print(f'Created new User: {my_user}')
     # my_user = User.load_user('jd123')
     # print(f'Loaded an existing user: {my_user}')

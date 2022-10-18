@@ -18,7 +18,7 @@ class Projects:
         self.__description: str = ''
         self.__admin: str = ''
         self.__users: list[str] = []
-        self.__hwsets: list[dict[str, int]] = [{}]
+        self.__hwsets: dict[str, int] = {}
         """This is a list of hwsets"""
 
     @staticmethod
@@ -41,7 +41,6 @@ class Projects:
         project.__users.append(userid)
 
         projects_doc = project.__pack_dict()
-
 
         # Check that another project with the same projectid does not exist
         if DBManager.get_instance().insert_project_document(projects_doc):
@@ -91,7 +90,6 @@ class Projects:
         self.__users = project_dict['users']
         self.__hwsets = project_dict['hwsets']
 
-
     def get_users(self) -> list[str]:
         """Return a list of users that has access to the project
         This list is a copy so that client code cannot modify the internal list
@@ -103,7 +101,7 @@ class Projects:
         """Add a user from the project's authorized user list and adds the project to the user's project list
         Args:
             userid: user's id to be added
-        Returns: True if user was added, None if user was already in the list, False if user being added doesn't exist
+        Returns: True if user was added, None if user was already in the list, False if user being added doesn't exist, False if DBManager fails
             """
         newUser = User.load_user(userid)
         if newUser is None:
@@ -114,15 +112,17 @@ class Projects:
         else:
             self.__users.append(userid)
             updated_project_doc = self.__pack_dict()
-            DBManager.get_instance().update_project_document_users(updated_project_doc)
-            newUser.add_project(self.__projectid)
-            return True
+            if DBManager.get_instance().update_project_document(updated_project_doc, 'users'):
+                newUser.add_project(self.__projectid)
+                return True
+            else:
+                return False
 
     def remove_user(self, userid: str) -> bool:
         """Remove a user from the project's authorized user list and removes the project from the user's project list
         Args:
             userid: user's id to be removed
-        Returns: True if user was removed, None if user wasn't in the list, False if user being removed doesn't exist
+        Returns: True if user was removed, None if user wasn't in the list, False if user being removed doesn't exist, False if DBManager fails
             """
         oldUser = User.load_user(userid)
         if oldUser is None:
@@ -131,10 +131,12 @@ class Projects:
         if userid in self.__users:
             self.__users.remove(userid)
             updated_project_doc = self.__pack_dict()
-            DBManager.get_instance().update_project_document_users(updated_project_doc)
-            oldUser = User.load_user(userid)
-            oldUser.remove_project(self.__projectid)
-            return True
+            if DBManager.get_instance().update_project_document(updated_project_doc, 'users'):
+                oldUser = User.load_user(userid)
+                oldUser.remove_project(self.__projectid)
+                return True
+            else:
+                return False
         else:
             return None
 
@@ -152,22 +154,20 @@ class Projects:
         Args:
             hwset: name of the hwset
             qty: amount being rented
-        Returns: True if successful, False otherwise
+        Returns: True if successful, False if failure in DBManager
             """
-        pass
-    #         hwsets = Projects.get_hwsets(pid)
-    #         for x in hwsets:
-    #             if x == hw:
-    #                 return
-    #             else:
-    #                 continue
-    #         hwsets.append(hw)
-    #         c = connector.Connector("Projects")
-    #         myquery = {"id": pid}
-    #         newvalues = {"$set": {"hwsets": hwsets, "updated": datetime.now()}}
-    #         c.collection.update_one(myquery, newvalues)
-    #         c.terminate()
-    #         return
+        existed = hwset in self.__hwsets
+        if existed:
+            rented = self.__hwsets.get(hwset)
+            self.__hwsets[hwset] = rented + qty
+        else:
+            self.__hwsets[hwset] = qty
+
+        updated_project_doc = self.__pack_dict()
+        if DBManager.get_instance().update_project_document(updated_project_doc, 'hwsets'):
+            return True
+        else:
+            return False
 
     def remove_hwsets(self, hwset: str, qty: int) -> bool:
         """Remove a hwset and its quantity or modifies a hwset and its quantity
@@ -176,28 +176,36 @@ class Projects:
         Args:
             hwset: name of the hwset
             qty: amount being rented
-        Returns: True if successful, False otherwise
+        Returns: True if successful, None if hardware set isn't in project, False if subtracting too much or DBManager fails
             """
-        pass
-    #         hwsets = Projects.get_hwsets(pid)
-    #         try:
-    #             hwsets.remove(hw)
-    #             c = connector.Connector("Projects")
-    #             myquery = {"id": pid}
-    #             newvalues = {"$set": {"hwsets": hwsets, "updated": datetime.now()}}
-    #             c.collection.update_one(myquery, newvalues)
-    #             c.terminate()
-    #             return
-    #         except ValueError:
-    #             print("HWSet not found")
-    #             return -1
+        existed = hwset in self.__hwsets
+        if not existed:
+            return None
+        else:
+            rented = self.__hwsets.get(hwset)
+            if rented < qty:
+                return False
+            else:
+                new_rented = rented - qty
+                if new_rented == 0:
+                    self.__hwsets.pop(hwset)
+                else:
+                    self.__hwsets[hwset] = new_rented
+
+        updated_project_doc = self.__pack_dict()
+        if DBManager.get_instance().update_project_document(updated_project_doc, 'hwsets'):
+            return True
+        else:
+            return False
+
 
 if __name__ == '__main__':
-    # my_project = Projects.new_project(projectid='proj123', name='Project 1', description='This is my first test project', userid='jd123')
-    # print(f'Created new User: {my_project}')
-    my_project= Projects.load_project("proj123")
+    # my_project = Projects.new_project(projectid='proj456', name='Project 2', description='This is my second test project', userid='jb123')
+    # print(f'Created new Project: {my_project}')
+    my_project = Projects.load_project("proj123")
     print(f'Loaded an existing project: {my_project}')
 
+    print("==Testing User Functions==\n")
     print(f'One user: {my_project.get_users()}')
     print(f'Adding a user: {my_project.add_user("bn123")}')
     print(f'Two users: {my_project.get_users()}')
@@ -208,7 +216,24 @@ if __name__ == '__main__':
     print(f'Removing same user: {my_project.remove_user("bn123")}')
     print(f'One user: {my_project.get_users()}')
 
-    try:
-        my_project_again = Projects.load_project("proj123")
-    except NotImplementedError as e:
-        pass
+    print("\n==Testing Hardware Set Functions==\n")
+    print(f'No hardware sets: {my_project.get_hwsets()}')
+    print(f'Adding hardware set: {my_project.add_hwsets("HWSet123", 500)}')
+    print(f'One hardware sets: {my_project.get_hwsets()}')
+    print(f'Adding to same hardware set: {my_project.add_hwsets("HWSet123", 250)}')
+    print(f'One hardware sets: {my_project.get_hwsets()}')
+    print(f'Adding hardware set: {my_project.add_hwsets("HWSet456", 500)}')
+    print(f'Two hardware sets: {my_project.get_hwsets()}')
+    print(f'Removing amount from hardware set: {my_project.remove_hwsets("HWSet456", 250)}')
+    print(f'Two hardware sets: {my_project.get_hwsets()}')
+    print(f'Removing hardware set: {my_project.remove_hwsets("HWSet456", 250)}')
+    print(f'One hardware sets: {my_project.get_hwsets()}')
+    print(f'Removing same hardware set: {my_project.remove_hwsets("HWSet456", 250)}')
+    print(f'One hardware sets: {my_project.get_hwsets()}')
+    print(f'Removing hardware set: {my_project.remove_hwsets("HWSet123", 750)}')
+    print(f'One hardware sets: {my_project.get_hwsets()}')
+
+    # try:
+    #     my_project_again = Projects.load_project("proj123")
+    # except NotImplementedError as e:
+    #     pass

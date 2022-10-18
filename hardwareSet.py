@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, Dict
 from db_manager import DBManager
+from projects import Projects
 
 
 class HWSet:
@@ -15,8 +16,8 @@ class HWSet:
         self.__name: str = ''
         self.__capacity: int = ''
         self.__availability: int = ''
-        self.__projects: list[dict] = []
-        """This is a list of projects the hardware sets is renting out to"""
+        self.__projects: dict[str, int] = {}
+        """This is a list of projectids the hardware sets is renting out to"""
 
     @staticmethod
     def new_hwset(name: str, capacity: int) -> Optional['HWSets']:
@@ -33,7 +34,7 @@ class HWSet:
         hwset.__capacity = capacity
         hwset.__availability = capacity
 
-        hwset_doc = hwset.__packdict()
+        hwset_doc = hwset.__pack_dict()
 
         # Check that another hwset with the same hwset does not exist
         if DBManager.get_instance().insert_hwset_document(hwset_doc):
@@ -71,83 +72,123 @@ class HWSet:
     def __unpack_dict(self, hwset_dict) -> None:
         """Retrieve information from a dict stored in the database.
         """
-        self.__name: hwset_dict['name']
-        self.__capacity: hwset_dict['capacity']
-        self.__availability: hwset_dict['availability']
-        self.__projects: hwset_dict['projects']
+        self.__name = hwset_dict['name']
+        self.__capacity = hwset_dict['capacity']
+        self.__availability = hwset_dict['availability']
+        self.__projects = hwset_dict['projects']
 
-    def get_projects(self) -> list[dict]:
+    def get_capacity(self) -> int:
+        """Return the hardware set's capacity
+        Returns: Capacity of hardware set
+        """
+        return self.__capacity
+
+    def change_capacity(self, new_capacity: int):
+        """Modifies the current capacity for whatever reason
+        Returns: True if successful in changing capacity, False if failure in DBManager
+        """
+        self.__capacity = new_capacity
+        self.__availability = new_capacity
+        hwset_document = self.__pack_dict()
+
+        if DBManager.get_instance().update_hwset_document_multiple(hwset_document, 'capacity', 'availability'):
+            return True
+        else:
+            return False
+
+    def get_projects(self) -> dict[str, int]:
         """Return a list of projects that is renting out from this hardware set
         This list is a copy so that client code cannot modify the internal list
         Returns: A copy of projects list
         """
         return self.__projects.copy()
 
-    def check_out(self, projectid: str, quantity: int):
+    def check_out(self, projectid: str, qty: int):
         """Add/modify the project, and it's total quantity in the hardware set.
         Subtract the quantity that is being checked out with hardware set's availability.
         Add/modify the hardware set to the project's hwsets list.
         Args:
             projectid: project that is checking out
-            quantity: amount to be checked out
-        Returns: True if there is enough availability, False if there is not enough availability
+            qty: amount to be checked out
+        Returns: True if there is enough availability, False if there is not enough availability, False if project doesn't exist
         """
-        pass
-    #         # Checks if qty is > availability, if so deny the transaction
-    #         availability = HWSet.get_availability(hwset)
-    #         if amount > availability:
-    #             print("Too much! Do less!")
-    #             return False
-    #         # There is availability! Give it to them
-    #         else:
-    #             projects = HWSet.get_checkedout_list(hwset)
-    #             for x in projects:
-    #                 if x == pid:
-    #                     to_rent = amount + projects.get(pid)
-    #                     break
-    #             else:
-    #                 to_rent = amount
-    #             projects[pid] = to_rent
-    #             c = connector.Connector("HWSet")
+        project = Projects.load_project(projectid)
+        if project is None:
+            return False
+
+        if qty > self.__availability:
+            return False
+
+        # Everything is in-check, process the transaction!
+        # Updates availability
+        self.__availability -= qty
+
+        # Updates the project
+        existed = projectid in self.__projects
+        if existed:
+            rented = self.__projects.get(projectid) + qty
+            self.__projects[projectid] = rented
+        else:
+            self.__projects[projectid] = qty
+
+        updated_hwset_doc = self.__pack_dict()
+        if DBManager.get_instance().update_hwset_document_multiple(updated_hwset_doc, 'availability', 'projects'):
+            project.add_hwsets(self.__name, qty)
+            return True
+        else:
+            return False
+
     #             myquery = {"name": hwset}
     #             newvalues = {"$set": {"projects": projects, "updated": datetime.now()}}
     #             c.collection.update_one(myquery, newvalues)
     #             newvalues = {"$inc": {"availability": -amount}}
     #             c.collection.update_one(myquery, newvalues)
     #             c.terminate()
-    #             return True
 
-    def check_in(self, projectid: str, quantity: int):
+    def check_in(self, projectid: str, qty: int):
         """Remove/modify the project, and it's total quantity in the hardware set.
         Add the quantity that is being checked in with hardware set's availability.
         Remove/modify the hardware set to the project's hwsets list.
         Args:
             projectid: project that is checking in
-            quantity: amount to be checked in
-        Returns: True if availability <= capacity and resources was successfully checked in, False otherwise
+            qty: amount to be checked in
+        Returns:
+            True if availability <= capacity and resources was successfully checked in
+            None if project isn't checking any resources out
+            False if new availability exceeds capacity, False if project doesn't exist, False if checking in too much
         """
-        pass
-    #         capacity = HWSet.get_capacity(hwset)
-    #         availability = HWSet.get_availability(hwset)
-    #         projects = HWSet.get_checkedout_list(hwset)
-    #         for x in projects:
-    #             if x == pid:
-    #                 rented = projects.get(pid)
-    #                 break
-    #         else:
-    #             print("NOT FOUND")
-    #             return False
-    #         if amount > rented:
-    #             print("TOO MUCH, YOU HAVE LESS!")
-    #             return False
-    #         else:
-    #             availability += amount
-    #             if availability > capacity:
-    #                 print("AVAILABILITY EXCEEDED CAPACITY!")
-    #                 return False
-    #             else:
-    #                 projects[pid] = rented-amount
-    #                 c = connector.Connector("HWSet")
+        project = Projects.load_project(projectid)
+        if project is None:
+            return False
+
+        existed = projectid in self.__projects
+        if not existed:
+            return None
+
+        if self.__projects.get(projectid) < qty:
+            return False
+
+        if self.__capacity < self.__availability + (self.__projects.get(projectid) - qty):
+            return False
+
+        # Update availability, new resources!
+        self.__availability += qty
+
+        # Update projects!
+        new_rent = self.__projects.get(projectid) - qty
+        if new_rent == 0:
+            self.__projects.pop(projectid)
+        else:
+            self.__projects[projectid] = new_rent
+
+        updated_hwset_doc = self.__pack_dict()
+        if DBManager.get_instance().update_hwset_document_multiple(updated_hwset_doc, 'availability', 'projects'):
+            # Update specific project!
+            project.remove_hwsets(self.__name, qty)
+            return True
+        else:
+            return False
+
     #                 myquery = {"name": hwset}
     #                 newvalues = {"$set": {"projects": projects, "updated": datetime.now()}}
     #                 c.collection.update_one(myquery, newvalues)
@@ -155,3 +196,42 @@ class HWSet:
     #                 c.collection.update_one(myquery, newvalues)
     #                 c.terminate()
     #         return True
+
+
+if __name__ == '__main__':
+    my_hwset = HWSet.new_hwset(name='HW123', capacity=1000)
+    print(f'Created new HWSet: {my_hwset}')
+    # my_hwset = HWSet.load_hwset(name='HW123')
+    # print(f'Loaded an existing project: {my_hwset}')
+
+    print("==Testing Capacity Functions==\n")
+    print(f'Current Capacity: {my_hwset.get_capacity()}')
+    print(f'Changing Capacity: {my_hwset.change_capacity(100)}')
+    print(f'New Capacity: {my_hwset.get_capacity()}')
+    print(f'Changing Capacity Back: {my_hwset.change_capacity(1000)}')
+    print(f'Current Capacity: {my_hwset.get_capacity()}')
+
+    print("\n==Testing Check-Out and Check-In Functions==\n")
+    print(f'Checking Out: {my_hwset.check_out("proj123", 500)}')
+    print(f'1 Project Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking Out: {my_hwset.check_out("proj456", 200)}')
+    print(f'2 Projects Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking Out: {my_hwset.check_out("proj456", 200)}')
+    print(f'2 Projects Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking Out: {my_hwset.check_out("proj456", 200)}')
+    print(f'2 Projects Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking Out: {my_hwset.check_out("projNA", 200)}')
+    print(f'2 Projects Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking Out: {my_hwset.check_out("proj456", 100)}')
+    print(f'2 Projects Checked Out: {my_hwset.get_projects()}')
+
+    print(f'Checking In: {my_hwset.check_in("projNA", 250)}')
+    print(f'2 Projects Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking In: {my_hwset.check_in("proj456", 250)}')
+    print(f'2 Projects Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking In: {my_hwset.check_in("proj456", 500)}')
+    print(f'2 Projects Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking In: {my_hwset.check_in("proj456", 250)}')
+    print(f'1 Projects Checked Out: {my_hwset.get_projects()}')
+    print(f'Checking In: {my_hwset.check_in("proj123", 500)}')
+    print(f'0 Projects Checked Out: {my_hwset.get_projects()}')
