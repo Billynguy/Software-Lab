@@ -1,16 +1,6 @@
 import React from "react"; 
 
-class Projects extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>Projects</h1>
-        <p>These are your projects.</p>
-      </div>
-    )
-  }
-}
-
+/*
 class Login extends React.Component {
   logUserIn = () => {
     // we can access handleLogin from App since it was passed as a prop
@@ -33,26 +23,166 @@ class Login extends React.Component {
     )
   }
 }
+*/
 
-class App extends React.Component {
-  constructor(props) {
-    // in React, we always need to call the superclass constructor first with super() 
-    // if we override the component's constructor
+
+function SubmitButton(props){ 
+  return (
+    <button className="submitButton" onClick={props.onClick}>
+      {props.submitText}
+    </button>
+    );
+}
+
+function UserIDTextBox(props){ 
+  return (
+    <div>
+      <input type="text" value="" onChange={props.onChange}></input>
+    </div>
+    );
+}
+
+function PasswordTextBox(props){ 
+  return (
+    <div>
+      <input type="text" value="" onChange={props.onChange}></input>
+    </div>
+    );
+}
+
+class LoginBox extends React.Component{
+  constructor(props){
     super(props)
-
-    // app owns the login state because it needs it in order to do conditional rendering.
-    // shared state should always be as low as possible in the component hierarchy.
-    this.state = { isLoggedIn: false }
+    this.state = {
+      userID: "",
+      password: "",
+      success: false,
+    }
   }
 
+  handleSubmit(){
+    if(this.props.submitText.equals("Log In!")){
+      this.props.onLogin()
+    }
+    else{
+      this.props.onCreate()
+    }
+  }
+
+  changeUserIDInput(){
+    // TODO: get text input
+  }
+
+  changePasswordInput(){
+    // TODO: get text input
+  }
+
+
+  renderUserIDTextBox() {
+    return (
+      <div>
+        <p>UserID:</p>
+        <UserIDTextBox
+          onChange={this.changeUserIDInput()}
+        />
+      </div>
+    );
+  }
+
+  renderPasswordTextBox() {
+    return (
+      <div>
+        <p>Password:</p>
+        <PasswordTextBox
+          onChange={this.changePasswordInput()}
+        />
+      </div>
+    );
+  }
+
+  
+
+  renderSubmitButton(){
+    return (
+      <SubmitButton
+        submitText={this.props.submitText}
+        onClick={() => this.handleSubmit()}
+      />
+    );
+  }
+
+
+  render(){
+    return (
+      <div className="LoginBox">
+        <h4>UserID</h4>
+        {this.renderUserIDTextBox()}
+        <h4>Password</h4>
+        {this.renderPasswordTextBox()}
+        {this.renderSubmitButton()}
+      </div>
+    );
+  }
+}
+
+
+class LoginPage extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      userID: "",
+      password: "",
+      validLogin: false,
+      createAccount: false,
+    }
+  }
+
+  /*
   handleLogin = (loggedIn) => {
     this.setState({
       isLoggedIn: loggedIn
     })
   }
+  */
+
+  handleLogin(){
+    // TODO: Login method
+  }
+
+  handleCreateNewAccount(){
+    // TODO: Create New Account method
+  }
+
+
+  renderLoginBox(){
+    return (
+      <LoginBox
+        submitText={"Log In!"}
+        onLogin={() => this.handleLogin()}
+      />
+    );
+  }
+
+  renderNewUserBox(){
+    return (
+      <LoginBox
+        submitText={"Create Account!"}
+        onCreateAcc={() => this.handleCreateNewAccount()}
+      />
+    );
+  }
 
   render() {
-    // conditional rendering
+    return (
+        <div className="LoginPage">
+          <h1>Login Page:</h1>
+          {this.renderLoginBox()}
+          <div></div>
+          <h2>New User? </h2>
+          {this.renderNewUserBox()}
+        </div>
+    );
+    /*
     if (this.state.isLoggedIn) {
       return (<Projects />)
     }
@@ -60,7 +190,8 @@ class App extends React.Component {
       // Login needs to be able to mutate the login state, so we pass it handleLogin as a prop
       return (<Login handleLogin={this.handleLogin}/>)
     }
+    */
   }
 }
 
-export default App;
+export default LoginPage;
