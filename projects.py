@@ -1,5 +1,6 @@
 from typing import Optional
 from db_manager import DBManager
+from user import User
 
 
 class Projects:
@@ -17,7 +18,7 @@ class Projects:
         self.__description: str = ''
         self.__admin: str = ''
         self.__users: list[str] = []
-        self.__hwsets: list[dict] = []
+        self.__hwsets: list[dict[str, int]] = [{}]
         """This is a list of hwsets"""
 
     @staticmethod
@@ -41,8 +42,12 @@ class Projects:
 
         projects_doc = project.__pack_dict()
 
+
         # Check that another project with the same projectid does not exist
         if DBManager.get_instance().insert_project_document(projects_doc):
+            # Newly created project, update user's projects list!
+            userOwner = User.load_user(userid)
+            userOwner.add_project(projectid)
             return project
 
         return None
@@ -80,11 +85,11 @@ class Projects:
         """Retrieve information from a dict stored in the database.
         """
         self.__projectid = project_dict['projectid']
-        self.__name: project_dict['name']
-        self.__description: project_dict['description']
-        self.__admin: project_dict['admin']
-        self.__users: project_dict['users']
-        self.__hwsets: project_dict['hwsets']
+        self.__name = project_dict['name']
+        self.__description = project_dict['description']
+        self.__admin = project_dict['admin']
+        self.__users = project_dict['users']
+        self.__hwsets = project_dict['hwsets']
 
 
     def get_users(self) -> list[str]:
@@ -98,27 +103,40 @@ class Projects:
         """Add a user from the project's authorized user list and adds the project to the user's project list
         Args:
             userid: user's id to be added
-        Returns: True if user was added/was already in the list
+        Returns: True if user was added, None if user was already in the list, False if user being added doesn't exist
             """
+        newUser = User.load_user(userid)
+        if newUser is None:
+            return False
+
         if userid in self.__users:
-            return True
+            return None
         else:
             self.__users.append(userid)
+            updated_project_doc = self.__pack_dict()
+            DBManager.get_instance().update_project_document_users(updated_project_doc)
+            newUser.add_project(self.__projectid)
             return True
-            """*Add project to the specific user now! Or verify*"""
 
     def remove_user(self, userid: str) -> bool:
         """Remove a user from the project's authorized user list and removes the project from the user's project list
         Args:
             userid: user's id to be removed
-        Returns: True if user was removed/wasn't in the list
+        Returns: True if user was removed, None if user wasn't in the list, False if user being removed doesn't exist
             """
+        oldUser = User.load_user(userid)
+        if oldUser is None:
+            return False
+
         if userid in self.__users:
             self.__users.remove(userid)
-            """*Remove project to the specific user now! Or verify*"""
+            updated_project_doc = self.__pack_dict()
+            DBManager.get_instance().update_project_document_users(updated_project_doc)
+            oldUser = User.load_user(userid)
+            oldUser.remove_project(self.__projectid)
             return True
         else:
-            return True
+            return None
 
     def get_hwsets(self) -> list[dict]:
         """Return a list of hwsets (which is a dictionary since name, amount) the project is renting from
@@ -127,7 +145,7 @@ class Projects:
         """
         return self.__hwsets.copy()
 
-    def _add_hwsets(self, hwset: str, qty: int) -> bool:
+    def add_hwsets(self, hwset: str, qty: int) -> bool:
         """Add a hwset and its quantity or modifies a hwset and its quantity
         Note: This method should not be called directly by the client since it does not actually modify the hwset
         Instead, the HWset object should add/modify the project's quantity and call this method on the project.
@@ -151,7 +169,7 @@ class Projects:
     #         c.terminate()
     #         return
 
-    def _remove_hwsets(self, hwset: str, qty: int) -> bool:
+    def remove_hwsets(self, hwset: str, qty: int) -> bool:
         """Remove a hwset and its quantity or modifies a hwset and its quantity
         Note: This method should not be called directly by the client since it does not actually modify the hwset
         Instead, the HWset object should remove/modify the project's quantity and call this method on the project.
@@ -173,3 +191,24 @@ class Projects:
     #         except ValueError:
     #             print("HWSet not found")
     #             return -1
+
+if __name__ == '__main__':
+    # my_project = Projects.new_project(projectid='proj123', name='Project 1', description='This is my first test project', userid='jd123')
+    # print(f'Created new User: {my_project}')
+    my_project= Projects.load_project("proj123")
+    print(f'Loaded an existing project: {my_project}')
+
+    print(f'One user: {my_project.get_users()}')
+    print(f'Adding a user: {my_project.add_user("bn123")}')
+    print(f'Two users: {my_project.get_users()}')
+    print(f'Adding same user: {my_project.add_user("bn123")}')
+    print(f'Two users: {my_project.get_users()}')
+    print(f'Removing a user: {my_project.remove_user("bn123")}')
+    print(f'One user: {my_project.get_users()}')
+    print(f'Removing same user: {my_project.remove_user("bn123")}')
+    print(f'One user: {my_project.get_users()}')
+
+    try:
+        my_project_again = Projects.load_project("proj123")
+    except NotImplementedError as e:
+        pass

@@ -76,7 +76,7 @@ class User:
         """
         return self.__projects.copy()
 
-    def _add_project(self, projectid: str) -> bool:
+    def add_project(self, projectid: str) -> bool:
         """Add a project to the list the user has access to.
         Note: This method should not be called directly by the client since it does not actually grant the user access.
         Instead, the Project object should add the user to its authorized list and call this method on the user.
@@ -95,7 +95,7 @@ class User:
 
         return not existed
 
-    def _remove_project(self, projectid: str) -> bool:
+    def remove_project(self, projectid: str) -> bool:
         """Remove a project to the list the user has access to.
         Note: This method should not be called directly by the client since it does not actually remove the user access.
         Instead, the Project object should remove the user to its authorized list and call this method on the user.
@@ -135,18 +135,19 @@ class User:
 
 # Example client code
 if __name__ == '__main__':
-    my_user = User.new_user(username='John Doe', userid='jd123', password='password123')
+    my_user = User.new_user(username='Billy Nguyen', userid='bn123', password='password123')
     print(f'Created new User: {my_user}')
     # my_user = User.load_user('jd123')
+    # print(f'Loaded an existing user: {my_user}')
 
     print(f'No projects: {my_user.get_projects()}')
-    print(f'Adding a project: {my_user._add_project("pj123")}')
+    print(f'Adding a project: {my_user.add_project("pj123")}')
     print(f'One project: {my_user.get_projects()}')
-    print(f'Adding same project: {my_user._add_project("pj123")}')
+    print(f'Adding same project: {my_user.add_project("pj123")}')
     print(f'One project: {my_user.get_projects()}')
-    print(f'Removing project: {my_user._remove_project("pj123")}')
+    print(f'Removing project: {my_user.remove_project("pj123")}')
     print(f'No projects: {my_user.get_projects()}')
-    print(f'Removing same project: {my_user._remove_project("pj123")}')
+    print(f'Removing same project: {my_user.remove_project("pj123")}')
     print(f'No projects: {my_user.get_projects()}')
 
     try:

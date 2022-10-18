@@ -82,8 +82,23 @@ class DBManager:
         })
 
     def insert_project_document(self, project_document:dict) -> bool:
-        """Attempt to insert a project document"""
+        """Attempt to insert a project document
+        Will fail if there is an exisiting project with same projectid"""
+        if self.get_project_document_by_id(project_document['projectid']) is not None:
+            return False
+
         self.__projects_collection.insert_one(project_document)
+        return True
+
+    def update_project_document_users(self, project_document: dict) -> bool:
+        """Attempt to update a project's users attribute
+        Will fail if there is no existing project document with the same project id"""
+        if self.get_project_document_by_id(project_document['projectid']) is None:
+            return False
+
+        identifier = {'projectid': project_document['projectid']}
+        new_users = {'$set': {'users': project_document['users']}}
+        self.__projects_collection.update_one(identifier, new_users)
         return True
 
     def get_project_document_by_id(self, projectid: str) -> Optional[dict]:
