@@ -1,4 +1,5 @@
 import React from "react"; 
+import './App.css';
 
 /*
 class Login extends React.Component {
@@ -36,17 +37,13 @@ function SubmitButton(props){
 
 function UserIDTextBox(props){ 
   return (
-    <div>
-      <input type="text" value="" onChange={props.onChange}></input>
-    </div>
+    <input className="userIDTextBox" type="text" value="" onChange={props.onChange}></input>
     );
 }
 
 function PasswordTextBox(props){ 
   return (
-    <div>
-      <input type="text" value="" onChange={props.onChange}></input>
-    </div>
+      <input className="passwordTextBox" type="text" value="" onChange={props.onChange}></input>
     );
 }
 
@@ -115,9 +112,7 @@ class LoginBox extends React.Component{
   render(){
     return (
       <div className="LoginBox">
-        <h4>UserID</h4>
         {this.renderUserIDTextBox()}
-        <h4>Password</h4>
         {this.renderPasswordTextBox()}
         {this.renderSubmitButton()}
       </div>
