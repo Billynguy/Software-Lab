@@ -19,7 +19,7 @@ class Projects extends React.Component {
           <h1>Projects</h1>
           <h3>These are your projects.</h3>
         </div>
-        
+        {/* TODO: change to just a page with button/link for each project */}
         <div>
           <Project projname="Project 1" qty1 = "34" qty2 = "20" /> 
           {/* TODO: Make this dynamic and generate from JSON provided by backend. */}
