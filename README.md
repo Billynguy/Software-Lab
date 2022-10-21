@@ -1,7 +1,9 @@
 # Software-Lab
 ECE461L Software Lab Group consisting of Daniel Xie, Gaurav Belani, Billy Nguyen, Kerry Tu, and Bobby Chiu. Group name is Los Pollos Hermanos.
 
-## Database Code
+## Running the Development Server
+
+### Flask Back-end
 
 Make sure you have Python 3 installed.
 
@@ -14,9 +16,9 @@ venv/Scripts/activate # For Windows, or `source venv/bin/activate` on non-Window
 pip install -r requirements.txt
 ```
 
-After preparing the requirements, make sure you activate the virtual environment. Then, you can use the database code:
+After preparing the requirements, make sure you activate the virtual environment. Then, you can run the back-end Flask app:
 
 ```sh
 venv/Scripts/activate # For Windows, or `source venv/bin/activate` on non-Windows systems
-# Do something with the database
+flask run # Or `flask --debug run`
 ```
