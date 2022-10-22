@@ -47,7 +47,7 @@ class User:
         return None
 
     @staticmethod
-    def load_user(userid: str) -> Optional['User']:
+    def load_user_by_id(userid: str) -> Optional['User']:
         """Load a User object from its user id.
         Client code should use this static method instead of calling the constructor when loading a user.
         Fails if there is no user with the user id.
@@ -64,8 +64,32 @@ class User:
         user_obj.__unpack_dict(user_doc)
         return user_obj
 
+    @staticmethod
+    def load_user_by_name(username: str) -> Optional['User']:
+        """Load a User object from its username.
+        Client code should use this static method instead of calling the constructor when loading a user.
+        Fails if there is no user with the username.
+        Args:
+            username: Username of the user to load
+        Returns: User object represented by the username, None if no such user exists
+        """
+
+        user_doc = DBManager.get_instance().get_user_document_by_name(username)
+        if user_doc is None:
+            return None
+
+        user_obj = User()
+        user_obj.__unpack_dict(user_doc)
+        return user_obj
+
+    def get_username(self) -> str:
+        return self.__username
+
     def get_userid(self) -> str:
         return self.__userid
+
+    def matches_password(self, password: str) -> bool:
+        return self.__password == password
 
     def get_projects(self) -> list[str]:
         """Return a list of projects the user has access to.
@@ -152,6 +176,6 @@ if __name__ == '__main__':
 
     try:
         # print('User.load_user is not implemented')
-        my_user_again = User.load_user('jd123')
+        my_user_again = User.load_user_by_id('jd123')
     except NotImplementedError as e:
         pass

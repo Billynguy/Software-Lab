@@ -1,4 +1,5 @@
-from flask import Blueprint, redirect, make_response, session
+from flask import Blueprint, make_response, session, redirect, request
+from user import User
 
 user_bp = Blueprint('user', __name__)
 """Blueprint for api requests related to users.
@@ -13,14 +14,39 @@ def __user_sign_in():
     """Sign in the user.
 
     Verify that the sign-in information is valid.
-    :return: url redirection to the project selection page if valid or the sign-in page if invalid
+    In this implementation, the front-end has to handle redirection by using, for example: `window.location = ...`.
+    :return: json response for front-end to handle
     """
 
-    # Verify that the sign-in information is valid
-    # if request.info in user_collection and user_document.matches(request.info):
-    #     session['userid'] = request.userid
-    #     return redirect('/projects')
-    return redirect('/login')
+    # # Verify that the sign-in information is valid
+    user = User.load_user_by_name(request.form['username'])
+    if user is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Could not sign in.',
+            }
+        }, 404)
+
+    if not user.matches_password(request.form['password']):
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Could not sign in.',
+            }
+        }, 404)
+
+    session.clear()
+    session['userid'] = user.get_userid()
+
+    return make_response({
+        'status': {
+            'success': True,
+        },
+        'data': {
+            'userid': user.get_userid(),
+        }
+    }, 200)
 
 
 @user_bp.post('/sign-up')
@@ -28,15 +54,36 @@ def __user_sign_up():
     """Sign up a new account.
 
     Verify that the sign-up information is valid.
-    :return: url redirection to the project selection page if valid or the sign-up page if invalid
+    In this implementation, the front-end has to handle redirection by using, for example: `window.location = ...`.
+    :return: json response for front-end to handle
     """
 
     # Verify that the sign-up information is valid
-    # if request.info not in user_collection:
-    #     user_collection.add(create_user_document(request.info))
-    #     session['userid'] = request.userid
-    #     return redirect('/projects')
-    return redirect('/login')
+    if User.load_user_by_name(request.form['username']) is not None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Could not sign up.',
+            }
+        }, 405)
+
+    # TODO: Generate a userid (e.g. by uuid)
+    # TODO: Encrypt password
+    userid = request.form['username']
+
+    # Note: Inserts new document into database
+    User.new_user(request.form['username'], userid, request.form['password'])
+
+    session.clear()
+    session['userid'] = userid
+    return make_response({
+        'status': {
+            'success': True,
+        },
+        'data': {
+            'userid': userid,
+        }
+    }, 201)
 
 
 @user_bp.get('/sign-out')
@@ -73,24 +120,24 @@ def __user_get_user_info(userid: str):
             }
         }, 404)
 
-    # user = get_user_collection().get_user(userid)
-    # if user is None:
-    #     return make_response({
-    #         'status': {
-    #             'success': False,
-    #             'reason': 'Unable to get user information.',
-    #         }
-    #     }, 404)
+    user = User.load_user_by_id(userid)
+    if user is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get user information.',
+            }
+        }, 404)
 
-    # return make_response({
-    #     'status': {
-    #         'success': True,
-    #     },
-    #     'data': {
-    #         'username': user.get_username(),
-    #         'userid': user.get_userid(),
-    #     }
-    # }, 200)
+    return make_response({
+        'status': {
+            'success': True,
+        },
+        'data': {
+            'username': user.get_username(),
+            'userid': user.get_userid(),
+        }
+    }, 200)
 
 
 @user_bp.get('/user/<uuid:userid>/project-list')
@@ -111,20 +158,20 @@ def __user_get_projects(userid: str):
             }
         }, 404)
 
-    # user = get_user_collection().get_user(userid)
-    # if user is None:
-    #     return make_response({
-    #         'status': {
-    #             'success': False,
-    #             'reason': 'Unable to get user information.',
-    #         }
-    #     }, 404)
+    user = User.load_user_by_id(userid)
+    if user is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get user information.',
+            }
+        }, 404)
 
-    # return make_response({
-    #     'status': {
-    #         'success': True,
-    #     },
-    #     'data': {
-    #         'projects': user.get_project_list()
-    #     }
-    # }, 200)
+    return make_response({
+        'status': {
+            'success': True,
+        },
+        'data': {
+            'projects': user.get_projects()
+        }
+    }, 200)
