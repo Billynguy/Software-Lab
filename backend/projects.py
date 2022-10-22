@@ -45,7 +45,7 @@ class Projects:
         # Check that another project with the same projectid does not exist
         if DBManager.get_instance().insert_project_document(projects_doc):
             # Newly created project, update user's projects list!
-            userOwner = User.load_user(userid)
+            userOwner = User.load_user_by_id(userid)
             userOwner.add_project(projectid)
             return project
 
@@ -90,6 +90,26 @@ class Projects:
         self.__users = project_dict['users']
         self.__hwsets = project_dict['hwsets']
 
+    def get_projectid(self) -> str:
+        """Return the projectid of this project.
+        """
+        return self.__projectid
+
+    def get_name(self) -> str:
+        """Return the name of this project.
+        """
+        return self.__name
+
+    def get_description(self) -> str:
+        """Return the description of this project.
+        """
+        return self.__description
+
+    def get_admin(self) -> str:
+        """Return the userid of the admin user.
+        """
+        return self.__admin
+
     def get_users(self) -> list[str]:
         """Return a list of users that has access to the project
         This list is a copy so that client code cannot modify the internal list
@@ -103,7 +123,7 @@ class Projects:
             userid: user's id to be added
         Returns: True if user was added, None if user was already in the list, False if user being added doesn't exist, False if DBManager fails
             """
-        newUser = User.load_user(userid)
+        newUser = User.load_user_by_id(userid)
         if newUser is None:
             return False
 
@@ -124,7 +144,7 @@ class Projects:
             userid: user's id to be removed
         Returns: True if user was removed, None if user wasn't in the list, False if user being removed doesn't exist, False if DBManager fails
             """
-        oldUser = User.load_user(userid)
+        oldUser = User.load_user_by_id(userid)
         if oldUser is None:
             return False
 
@@ -132,7 +152,7 @@ class Projects:
             self.__users.remove(userid)
             updated_project_doc = self.__pack_dict()
             if DBManager.get_instance().update_project_document(updated_project_doc, 'users'):
-                oldUser = User.load_user(userid)
+                oldUser = User.load_user_by_id(userid)
                 oldUser.remove_project(self.__projectid)
                 return True
             else:
@@ -140,10 +160,18 @@ class Projects:
         else:
             return None
 
-    def get_hwsets(self) -> list[dict]:
-        """Return a list of hwsets (which is a dictionary since name, amount) the project is renting from
+    def has_user(self, userid: str) -> bool:
+        """Check that a user is in the project's authorized user list.
+        Args:
+            userid: user's id to check
+        Returns: True if found in list, False if not
+        """
+        return userid in self.__users
+
+    def get_hwsets(self) -> dict[str, int]:
+        """Return a dict of hwsets (which is a dictionary mapping name to amount) the project is renting from
         This list is a copy so that client code cannot modify the internal list
-        Returns: A copy of hwsets list
+        Returns: A copy of hwsets dict
         """
         return self.__hwsets.copy()
 

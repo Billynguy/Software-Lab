@@ -96,12 +96,28 @@ class HWSet:
         else:
             return False
 
+    def get_availability(self) -> int:
+        """Return the hardware set's availability
+        Returns: Availability of hardware set
+        """
+        return self.__availability
+
     def get_projects(self) -> dict[str, int]:
         """Return a list of projects that is renting out from this hardware set
         This list is a copy so that client code cannot modify the internal list
         Returns: A copy of projects list
         """
         return self.__projects.copy()
+
+    def has_project(self, projectid: str) -> bool:
+        """Return whether the specified project is using this hardware set.
+        """
+        return projectid in self.__projects
+
+    def get_checked_out(self, projectid: str) -> int:
+        """Return the number of resources of this hardware set that is checked out by the specified project.
+        """
+        return self.__projects.get(projectid, 0)
 
     def check_out(self, projectid: str, qty: int):
         """Add/modify the project, and it's total quantity in the hardware set.
