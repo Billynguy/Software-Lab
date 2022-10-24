@@ -1,5 +1,6 @@
 from typing import Optional
 from db_manager import DBManager
+from uuid import uuid4
 
 
 class User:
@@ -19,14 +20,13 @@ class User:
         """This is a list of project ids."""
 
     @staticmethod
-    def new_user(username: str, userid: str, password: str) -> Optional['User']:
+    def new_user(username: str, password: str) -> Optional['User']:
         """Create and return a new user with the given parameters.
         Client code should use this static method instead of calling the constructor when creating a new user.
         Fails if another user with the same user id exists.
 
         Args:
             username: Username of the user
-            userid: User id of the user
             password: Password of the user
 
         Returns: User object representing the newly created user, None if another user with the same user id exists
@@ -35,7 +35,7 @@ class User:
 
         user = User()
         user.__username = username
-        user.__userid = userid
+        user.__userid = str(uuid4())
         user.__password = password
 
         user_doc = user.__pack_dict()

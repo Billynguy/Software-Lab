@@ -1,6 +1,7 @@
 from typing import Optional
 from db_manager import DBManager
 from user import User
+from uuid import uuid4
 
 
 class Projects:
@@ -22,19 +23,18 @@ class Projects:
         """This is a list of hwsets"""
 
     @staticmethod
-    def new_project(projectid: str, name: str, description: str, userid: str) -> Optional['Projects']:
+    def new_project(name: str, description: str, userid: str) -> Optional['Projects']:
         """Create and return a new project with the given parameters.
         Client code should use this static method instead of calling the constructor when creating a new project.
         Fails if another project with the same project id exists.
         Args:
-            projectid: ID of the project
             name: name of the project
             description: description of the project
             userid: userid of the user creating it
         Returns: Project object representing the newly created project, None if another project with the same project id exists
         """
         project = Projects()
-        project.__projectid = projectid
+        project.__projectid = str(uuid4())
         project.__name = name
         project.__description = description
         project.__admin = userid
@@ -46,7 +46,7 @@ class Projects:
         if DBManager.get_instance().insert_project_document(projects_doc):
             # Newly created project, update user's projects list!
             userOwner = User.load_user_by_id(userid)
-            userOwner.add_project(projectid)
+            userOwner.add_project(project.__projectid)
             return project
 
         return None

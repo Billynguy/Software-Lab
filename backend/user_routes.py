@@ -67,21 +67,19 @@ def __user_sign_up():
             }
         }, 405)
 
-    # TODO: Generate a userid (e.g. by uuid)
     # TODO: Encrypt password
-    userid = request.form['username']
 
     # Note: Inserts new document into database
-    User.new_user(request.form['username'], userid, request.form['password'])
+    user = User.new_user(request.form['username'], request.form['password'])
 
     session.clear()
-    session['userid'] = userid
+    session['userid'] = user.get_userid()
     return make_response({
         'status': {
             'success': True,
         },
         'data': {
-            'userid': userid,
+            'userid': user.get_userid(),
         }
     }, 201)
 
