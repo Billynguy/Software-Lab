@@ -6,7 +6,10 @@ const useFetch = (url) => { // custom hooks in react need to start with word 'us
     const [error, setError] = useState(null);
 
     useEffect(() => {                           // can't make this async
-        fetch(url)
+        const abortCont = new AbortController();
+
+
+        fetch(url, { signal: abortCont.signal }) // associates abortCont with this fetch
             .then(res => {                      // 'then' fires a function once the fetch promise has resolved, ie once we have the data back. Reponse object res is NOT the data
                 if(!res.ok){
                     throw Error('Could not fetch the data for that resource.') // Can connect to server but response is not normal
@@ -19,9 +22,16 @@ const useFetch = (url) => { // custom hooks in react need to start with word 'us
                 setError(null); // gets rid of error message in (successful) subsequent requests
             })
             .catch(err => { // Catches any network error
-                setIsPending(false);
-                setError(err.message);
-            })       
+                if (err.name === 'AbortError'){
+                    console.log('Fetch Aborted');
+                }
+                else {
+                    setIsPending(false);
+                    setError(err.message);
+                }
+                
+            })
+        return () => abortCont.abort();       
         
     }, [url]); // whenever the url changes, this function will be rerun to get the data
 
