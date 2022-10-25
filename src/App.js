@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import { TextField } from "@mui/material";
 import Project from './components/ProjectPage/Project';
 import HWSet from './components/ProjectPage/HWSet';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Navbar from './Navbar';
 import Home from './Home';
 import "./index.css"
@@ -16,11 +16,18 @@ import "./index.css"
 
 function App() {
   return (
-    <div className="App">
-      <Navbar />
-      <div className="content"></div>
-      <Home />
-    </div>
+    <Router>
+      <div className="App">
+        <Navbar />
+        <div className="content"></div>
+        <Switch>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+    
   );
 }
 
