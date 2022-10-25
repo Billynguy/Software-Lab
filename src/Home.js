@@ -1,35 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import ProjectList from "./ProjectList";
 
 const Home = () => {
-    const [projects, setProjects] = useState([
-        { title: 'Project 1', id: 1},
-        { title: 'Project 2', id: 2},
-        { title: 'Project 3', id: 3},
-    ]);
+    const [projects, setProjects] = useState(null);
+    // COMMMENTED as we will eventually make delete request to server
+    // const handleDelete = (id) => {
+    //     const newProjects = projects.filter(project => project.id !== id); // leaves orig array unchanged, and returns a new array based on orig array
+    //     setProjects(newProjects);
+    // }
 
-    const handleDelete = (id) => {
-        const newProjects = projects.filter(project => project.id !== id); // leaves orig array unchanged, and returns a new array based on orig array
-        setProjects(newProjects);
-    }
+    // useEffect fires on every render
+    useEffect(() => {                           // can't make this async
+        fetch('http://localhost:8000/projects')
+            .then(res => {                      // 'then' fires a function once the fetch promise has resolved, ie once we have the data back. Reponse object res is NOT the data
+                return res.json()               // passes the json into a javascript object, the 'return res.json()' returns a promise b/c res.json() is aync
+            })
+            .then(data => {                     // we get the data now   
+                setProjects(data);
+            })       
+        ;
+    }, []);                                     // fetch this data once when the component renders
+
     return (  
-    <div className="home">
-        <h1>Projects</h1>
-        {projects.map((project) =>(
-            <div className="project-preview" key={project.id}>
-                <h2>{ project.title}</h2>
-                <button onClick={() => handleDelete(project.id)}>Delete Project</button>
-            </div>
-        ))}
-
-        <div className="links">
-            <a href="/create" style={{
-            color: "white",
-            backgroundColor: '#3e35f1',
-            borderRadius: '4px'
-        }}>New Project</a>
+        <div className="home">
+            {projects && <ProjectList projects={projects} title="All Projects" />}
         </div>
-        
-    </div>  
+
     );  
 }
  

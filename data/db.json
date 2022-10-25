@@ -1,0 +1,16 @@
+{
+    "projects":[
+        {
+            "title": "Project 1",
+            "hwset1": "34/100",
+            "hwset2": "22/100",
+            "id": 1
+        },
+        {
+            "title": "Project 2",
+            "hwset1": "38/100",
+            "hwset2": "26/100",
+            "id": 2
+        }
+    ]
+}
