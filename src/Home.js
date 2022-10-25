@@ -3,6 +3,7 @@ import ProjectList from "./ProjectList";
 
 const Home = () => {
     const [projects, setProjects] = useState(null);
+    const [isPending, setIsPending] = useState(true);
     // COMMMENTED as we will eventually make delete request to server
     // const handleDelete = (id) => {
     //     const newProjects = projects.filter(project => project.id !== id); // leaves orig array unchanged, and returns a new array based on orig array
@@ -17,12 +18,14 @@ const Home = () => {
             })
             .then(data => {                     // we get the data now   
                 setProjects(data);
+                setIsPending(false);
             })       
         ;
     }, []);                                     // fetch this data once when the component renders
 
     return (  
         <div className="home">
+            { isPending && <div>Loading...</div>}
             {projects && <ProjectList projects={projects} title="All Projects" />}
         </div>
 
