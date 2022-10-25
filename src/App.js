@@ -11,6 +11,7 @@ import Navbar from './Navbar';
 import Home from './Home';
 import "./index.css"
 import Create from './Create';
+import ProjectDetails from './ProjectDetails';
 // ----------------- End Project Page Imports ---------------
 
 
@@ -27,6 +28,9 @@ function App() {
           </Route>
           <Route path="/create">
             <Create />
+          </Route>
+          <Route path="/projects/:id">
+            <ProjectDetails /> 
           </Route>
         </Switch>
       </div>
