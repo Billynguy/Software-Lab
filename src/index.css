@@ -33,3 +33,6 @@
   margin: 40px auto;
   /* padding: 10px; */
 }
+.project-preview a{
+  text-decoration: none;
+}
