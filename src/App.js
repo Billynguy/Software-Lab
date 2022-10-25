@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Navbar from './Navbar';
 import Home from './Home';
 import "./index.css"
+import Create from './Create';
 // ----------------- End Project Page Imports ---------------
 
 
@@ -21,8 +22,11 @@ function App() {
         <Navbar />
         <div className="content"></div>
         <Switch>
-          <Route path="/">
+          <Route exact path="/">
             <Home />
+          </Route>
+          <Route path="/create">
+            <Create />
           </Route>
         </Switch>
       </div>
