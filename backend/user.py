@@ -137,27 +137,3 @@ class User:
         self.__userid = user_dict['userid']
         self.__password = user_dict['password']
         self.__projects = user_dict['projects']
-
-
-# Example client code
-if __name__ == '__main__':
-    my_user = User.new_user(username='Johnny B', userid='jb123', password='password123')
-    print(f'Created new User: {my_user}')
-    # my_user = User.load_user('jd123')
-    # print(f'Loaded an existing user: {my_user}')
-
-    print(f'No projects: {my_user.get_projects()}')
-    print(f'Adding a project: {my_user.add_project("pj123")}')
-    print(f'One project: {my_user.get_projects()}')
-    print(f'Adding same project: {my_user.add_project("pj123")}')
-    print(f'One project: {my_user.get_projects()}')
-    print(f'Removing project: {my_user.remove_project("pj123")}')
-    print(f'No projects: {my_user.get_projects()}')
-    print(f'Removing same project: {my_user.remove_project("pj123")}')
-    print(f'No projects: {my_user.get_projects()}')
-
-    try:
-        # print('User.load_user is not implemented')
-        my_user_again = User.load_user('jd123')
-    except NotImplementedError as e:
-        pass
