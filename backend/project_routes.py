@@ -55,9 +55,7 @@ def project_create_project():
     """
 
     # Verify that the project information is valid.
-    # TODO: Generate a projectid (e.g. by uuid)
-    projectid = request.form['projectname']
-    project = Project.new_project(projectid, request.form['name'], request.form['description'], session['userid'])
+    project = Project.new_project(request.form['projectid'], request.form['name'], request.form['description'], session['userid'])
     if project is None:
         return make_response({
             'status': {
@@ -71,7 +69,7 @@ def project_create_project():
             'success': True,
         },
         'data': {
-            'projectid': projectid,
+            'projectid': request.form['projectid'],
         }
     }, 201)
 
@@ -103,7 +101,7 @@ def project_authorize_user(projectid: str):
         }, 403)
 
     # Verify that the user exists
-    user = User.load_user(request['userid'])
+    user = User.load_user(request.form['userid'])
     if user is None:
         return make_response({
             'status': {
