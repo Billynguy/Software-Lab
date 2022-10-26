@@ -3,7 +3,7 @@ from db_manager import DBManager
 from user import User
 
 
-class Projects:
+class Project:
     """Back-end representation of projects
     A Project object can go out of sync especially in concurrent situations.
     Therefore, the object should be used only temporarily.
@@ -19,10 +19,10 @@ class Projects:
         self.__admin: str = ''
         self.__users: list[str] = []
         self.__hwsets: dict[str, int] = {}
-        """This is a list of hwsets"""
+        """This is a dict of hwsets"""
 
     @staticmethod
-    def new_project(projectid: str, name: str, description: str, userid: str) -> Optional['Projects']:
+    def new_project(projectid: str, name: str, description: str, userid: str) -> Optional['Project']:
         """Create and return a new project with the given parameters.
         Client code should use this static method instead of calling the constructor when creating a new project.
         Fails if another project with the same project id exists.
@@ -33,7 +33,7 @@ class Projects:
             userid: userid of the user creating it
         Returns: Project object representing the newly created project, None if another project with the same project id exists
         """
-        project = Projects()
+        project = Project()
         project.__projectid = projectid
         project.__name = name
         project.__description = description
@@ -45,14 +45,14 @@ class Projects:
         # Check that another project with the same projectid does not exist
         if DBManager.get_instance().insert_project_document(projects_doc):
             # Newly created project, update user's projects list!
-            userOwner = User.load_user_by_id(userid)
+            userOwner = User.load_user(userid)
             userOwner.add_project(projectid)
             return project
 
         return None
 
     @staticmethod
-    def load_project(projectid: str) -> Optional['Projects']:
+    def load_project(projectid: str) -> Optional['Project']:
         """Load a Project object from its project id.
         Client code should use this static method instead of calling the constructor when loading a project.
         Fails if there is no project with the project id.
@@ -64,7 +64,7 @@ class Projects:
         if project_doc is None:
             return None
 
-        project_obj = Projects()
+        project_obj = Project()
         project_obj.__unpack_dict(project_doc)
         return project_obj
 
@@ -117,14 +117,14 @@ class Projects:
         """
         return self.__users.copy()
 
-    def add_user(self, userid: str) -> bool:
+    def add_user(self, userid: str) -> Optional[bool]:
         """Add a user from the project's authorized user list and adds the project to the user's project list
         Args:
             userid: user's id to be added
         Returns: True if user was added, None if user was already in the list, False if user being added doesn't exist, False if DBManager fails
             """
-        newUser = User.load_user_by_id(userid)
-        if newUser is None:
+        new_user = User.load_user(userid)
+        if new_user is None:
             return False
 
         if userid in self.__users:
@@ -133,27 +133,27 @@ class Projects:
             self.__users.append(userid)
             updated_project_doc = self.__pack_dict()
             if DBManager.get_instance().update_project_document(updated_project_doc, 'users'):
-                newUser.add_project(self.__projectid)
+                new_user.add_project(self.__projectid)
                 return True
             else:
                 return False
 
-    def remove_user(self, userid: str) -> bool:
+    def remove_user(self, userid: str) -> Optional[bool]:
         """Remove a user from the project's authorized user list and removes the project from the user's project list
         Args:
             userid: user's id to be removed
         Returns: True if user was removed, None if user wasn't in the list, False if user being removed doesn't exist, False if DBManager fails
             """
-        oldUser = User.load_user_by_id(userid)
-        if oldUser is None:
+        old_user = User.load_user(userid)
+        if old_user is None:
             return False
 
         if userid in self.__users:
             self.__users.remove(userid)
             updated_project_doc = self.__pack_dict()
             if DBManager.get_instance().update_project_document(updated_project_doc, 'users'):
-                oldUser = User.load_user_by_id(userid)
-                oldUser.remove_project(self.__projectid)
+                old_user = User.load_user(userid)
+                old_user.remove_project(self.__projectid)
                 return True
             else:
                 return False
@@ -170,7 +170,7 @@ class Projects:
 
     def get_hwsets(self) -> dict[str, int]:
         """Return a dict of hwsets (which is a dictionary mapping name to amount) the project is renting from
-        This list is a copy so that client code cannot modify the internal list
+        This dict is a copy so that client code cannot modify the internal dict
         Returns: A copy of hwsets dict
         """
         return self.__hwsets.copy()
@@ -197,7 +197,7 @@ class Projects:
         else:
             return False
 
-    def remove_hwsets(self, hwset: str, qty: int) -> bool:
+    def remove_hwsets(self, hwset: str, qty: int) -> Optional[bool]:
         """Remove a hwset and its quantity or modifies a hwset and its quantity
         Note: This method should not be called directly by the client since it does not actually modify the hwset
         Instead, the HWset object should remove/modify the project's quantity and call this method on the project.
@@ -230,7 +230,7 @@ class Projects:
 if __name__ == '__main__':
     # my_project = Projects.new_project(projectid='proj456', name='Project 2', description='This is my second test project', userid='jb123')
     # print(f'Created new Project: {my_project}')
-    my_project = Projects.load_project("proj123")
+    my_project = Project.load_project("proj123")
     print(f'Loaded an existing project: {my_project}')
 
     print("==Testing User Functions==\n")

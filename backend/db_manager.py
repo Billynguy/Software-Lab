@@ -92,11 +92,6 @@ class DBManager:
             'userid': userid
         })
 
-    def get_user_document_by_name(self, username: str) -> Optional[dict]:
-        return self.__users_collection.find_one({
-            'username': username
-        })
-
     def insert_project_document(self, project_document: dict) -> bool:
         """Attempt to insert a project document
         Will fail if there is an existing project with same projectid"""

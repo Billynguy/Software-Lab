@@ -1,6 +1,6 @@
-from typing import Optional, Dict
+from typing import Optional
 from db_manager import DBManager
-from projects import Projects
+from project import Project
 
 
 class HWSet:
@@ -14,13 +14,13 @@ class HWSet:
         Rather, client code should prefer the static 'new_project' and 'load_project' methods.
         """
         self.__name: str = ''
-        self.__capacity: int = ''
-        self.__availability: int = ''
+        self.__capacity: int = 0
+        self.__availability: int = 0
         self.__projects: dict[str, int] = {}
-        """This is a list of projectids the hardware sets is renting out to"""
+        """This is a dict of projectids the hardware sets is renting out to"""
 
     @staticmethod
-    def new_hwset(name: str, capacity: int) -> Optional['HWSets']:
+    def new_hwset(name: str, capacity: int) -> Optional['HWSet']:
         """Create and return a new hardware set with the given parameters.
         Client code should use this static method instead of calling the constructor when creating a new hardware set.
         Fails if another hardware set with the same name exists.
@@ -128,7 +128,7 @@ class HWSet:
             qty: amount to be checked out
         Returns: True if there is enough availability, False if there is not enough availability, False if project doesn't exist
         """
-        project = Projects.load_project(projectid)
+        project = Project.load_project(projectid)
         if project is None:
             return False
 
@@ -173,7 +173,7 @@ class HWSet:
             None if project isn't checking any resources out
             False if new availability exceeds capacity, False if project doesn't exist, False if checking in too much
         """
-        project = Projects.load_project(projectid)
+        project = Project.load_project(projectid)
         if project is None:
             return False
 

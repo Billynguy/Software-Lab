@@ -10,7 +10,7 @@ user_bp = Blueprint('user', __name__)
 
 
 @user_bp.post('/sign-in')
-def __user_sign_in():
+def user_sign_in():
     """Sign in the user.
 
     Verify that the sign-in information is valid.
@@ -19,7 +19,7 @@ def __user_sign_in():
     """
 
     # # Verify that the sign-in information is valid
-    user = User.load_user_by_name(request.form['username'])
+    user = User.load_user(request.form['userid'])
     if user is None:
         return make_response({
             'status': {
@@ -50,7 +50,7 @@ def __user_sign_in():
 
 
 @user_bp.post('/sign-up')
-def __user_sign_up():
+def user_sign_up():
     """Sign up a new account.
 
     Verify that the sign-up information is valid.
@@ -59,7 +59,7 @@ def __user_sign_up():
     """
 
     # Verify that the sign-up information is valid
-    if User.load_user_by_name(request.form['username']) is not None:
+    if User.load_user(request.form['userid']) is not None:
         return make_response({
             'status': {
                 'success': False,
@@ -67,27 +67,24 @@ def __user_sign_up():
             }
         }, 405)
 
-    # TODO: Generate a userid (e.g. by uuid)
     # TODO: Encrypt password
-    userid = request.form['username']
-
     # Note: Inserts new document into database
-    User.new_user(request.form['username'], userid, request.form['password'])
+    User.new_user(request.form['username'], request.form['userid'], request.form['password'])
 
     session.clear()
-    session['userid'] = userid
+    session['userid'] = request.form['userid']
     return make_response({
         'status': {
             'success': True,
         },
         'data': {
-            'userid': userid,
+            'userid': request.form['userid'],
         }
     }, 201)
 
 
 @user_bp.get('/sign-out')
-def __user_sign_out():
+def user_sign_out():
     """Sign out the user.
 
     Clear the session user.
@@ -102,8 +99,8 @@ def __user_sign_out():
 """
 
 
-@user_bp.get('/user/<uuid:userid>/user-info')
-def __user_get_user_info(userid: str):
+@user_bp.get('/user/<string:userid>/user-info')
+def user_get_user_info(userid: str):
     """Get the user's username and userid.
 
     Session user must have permission.
@@ -120,7 +117,7 @@ def __user_get_user_info(userid: str):
             }
         }, 404)
 
-    user = User.load_user_by_id(userid)
+    user = User.load_user(userid)
     if user is None:
         return make_response({
             'status': {
@@ -140,8 +137,8 @@ def __user_get_user_info(userid: str):
     }, 200)
 
 
-@user_bp.get('/user/<uuid:userid>/project-list')
-def __user_get_projects(userid: str):
+@user_bp.get('/user/<string:userid>/project-list')
+def user_get_projects(userid: str):
     """Get the user's list of projects.
 
     Session user must have permission.
@@ -158,7 +155,7 @@ def __user_get_projects(userid: str):
             }
         }, 404)
 
-    user = User.load_user_by_id(userid)
+    user = User.load_user(userid)
     if user is None:
         return make_response({
             'status': {
