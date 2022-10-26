@@ -48,7 +48,7 @@ def resource_get_resource_info():
     """
 
     resources = []
-    for hwset_doc in DBManager.get_instance().get_hwsets_collection().find():
+    for hwset_doc in DBManager.get_instance().get_hwset_documents_as_generator():
         resources.append({
             'name': hwset_doc['name'],
             'capacity': hwset_doc['capacity'],
