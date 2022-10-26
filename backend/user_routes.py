@@ -10,7 +10,7 @@ user_bp = Blueprint('user', __name__)
 
 
 @user_bp.post('/sign-in')
-def __user_sign_in():
+def user_sign_in():
     """Sign in the user.
 
     Verify that the sign-in information is valid.
@@ -50,7 +50,7 @@ def __user_sign_in():
 
 
 @user_bp.post('/sign-up')
-def __user_sign_up():
+def user_sign_up():
     """Sign up a new account.
 
     Verify that the sign-up information is valid.
@@ -87,7 +87,7 @@ def __user_sign_up():
 
 
 @user_bp.get('/sign-out')
-def __user_sign_out():
+def user_sign_out():
     """Sign out the user.
 
     Clear the session user.
@@ -103,7 +103,7 @@ def __user_sign_out():
 
 
 @user_bp.get('/user/<uuid:userid>/user-info')
-def __user_get_user_info(userid: str):
+def user_get_user_info(userid: str):
     """Get the user's username and userid.
 
     Session user must have permission.
@@ -141,7 +141,7 @@ def __user_get_user_info(userid: str):
 
 
 @user_bp.get('/user/<uuid:userid>/project-list')
-def __user_get_projects(userid: str):
+def user_get_projects(userid: str):
     """Get the user's list of projects.
 
     Session user must have permission.

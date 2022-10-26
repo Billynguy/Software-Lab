@@ -12,7 +12,7 @@ project_bp = Blueprint('project', __name__)
 
 
 @project_bp.get('/open-project')
-def __project_open_project():
+def project_open_project():
     """Receive a project open request.
 
     Verify that the user has access to the project.
@@ -46,7 +46,7 @@ def __project_open_project():
 
 
 @project_bp.post('/create-project')
-def __project_create_project():
+def project_create_project():
     """Receive a project creation request.
 
     Verify that the project information is valid.
@@ -77,7 +77,7 @@ def __project_create_project():
 
 
 @project_bp.post('/project/<uuid:projectid>/authorize-user')
-def __project_authorize_user(projectid: str):
+def project_authorize_user(projectid: str):
     """Receive an authorize user request.
 
     Verify that this request comes from the admin and that the user exists.
@@ -123,7 +123,7 @@ def __project_authorize_user(projectid: str):
 
 
 @project_bp.post('/project/<uuid:projectid>/revoke-user')
-def __project_revoke_user(projectid: str):
+def project_revoke_user(projectid: str):
     """Receive a revoke user request.
 
     Verify that this request comes from the admin and that the user is currently authorized.
@@ -168,7 +168,7 @@ def __project_revoke_user(projectid: str):
 
 
 @project_bp.post('/project/<uuid:projectid>/update-resources')
-def __project_update_resources(projectid: str):
+def project_update_resources(projectid: str):
     """Receive an update resources request.
 
     Verify that this request comes an authorized user and is valid within constraints.
@@ -227,7 +227,7 @@ def __project_update_resources(projectid: str):
 
 
 @project_bp.post('/project/<uuid:projectid>/add-resource')
-def __project_add_resource(projectid: str):
+def project_add_resource(projectid: str):
     """Receive an add resource request.
 
     Verify that this request comes from an authorized user and that this resource exists.
@@ -271,7 +271,7 @@ def __project_add_resource(projectid: str):
 
 
 @project_bp.post('/project/<uuid:projectid>/remove-resource')
-def __project_remove_resource(projectid: str):
+def project_remove_resource(projectid: str):
     """Receive a remove resource request.
 
     Verify that this request comes from an authorized user and that the project is using 0 of this resource.
@@ -337,7 +337,7 @@ def __project_remove_resource(projectid: str):
 
 
 @project_bp.get('/project/<uuid:projectid>/project-info')
-def __project_get_project_info(projectid: str):
+def project_get_project_info(projectid: str):
     """Get the project's name, projectid, and description.
 
     Session user must have permission.
@@ -376,7 +376,7 @@ def __project_get_project_info(projectid: str):
 
 
 @project_bp.get('/project/<uuid:projectid>/user-list')
-def __project_get_users(projectid: str):
+def project_get_users(projectid: str):
     """Get the project's list of users.
 
     Session user must have permission.
@@ -413,7 +413,7 @@ def __project_get_users(projectid: str):
 
 
 @project_bp.get('/project/<uuid:projectid>/is-session-admin')
-def __project_is_admin(projectid: str):
+def project_is_admin(projectid: str):
     """Get whether the session user is admin.
 
     Session user must have permission.
@@ -450,7 +450,7 @@ def __project_is_admin(projectid: str):
 
 
 @project_bp.get('/project/<uuid:projectid>/resources')
-def __project_get_resources(projectid: str):
+def project_get_resources(projectid: str):
     """Get the project's list of resources corresponding usage information.
 
     Session user must have permission.

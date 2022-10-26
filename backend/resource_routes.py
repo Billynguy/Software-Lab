@@ -11,7 +11,7 @@ resource_bp = Blueprint('resource', __name__)
 
 
 @resource_bp.get('/resource/<string:hwset_name>/resource-info')
-def __resource_get_resource_info_for(hwset_name: str):
+def resource_get_resource_info_for(hwset_name: str):
     """Get the hardware set's name, capacity, and availability.
 
     We make all types of errors look identical to make it harder to reverse engineer.
@@ -40,7 +40,7 @@ def __resource_get_resource_info_for(hwset_name: str):
 
 
 @resource_bp.get('/resource/resource-info')
-def __resource_get_resource_info():
+def resource_get_resource_info():
     """Get all hardware sets' name, capacity, and availability.
 
     We make all types of errors look identical to make it harder to reverse engineer.
