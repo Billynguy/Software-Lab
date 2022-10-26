@@ -103,7 +103,7 @@ def project_authorize_user(projectid: str):
         }, 403)
 
     # Verify that the user exists
-    user = User.load_user_by_id(request['userid'])
+    user = User.load_user(request['userid'])
     if user is None:
         return make_response({
             'status': {

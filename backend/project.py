@@ -45,7 +45,7 @@ class Project:
         # Check that another project with the same projectid does not exist
         if DBManager.get_instance().insert_project_document(projects_doc):
             # Newly created project, update user's projects list!
-            userOwner = User.load_user_by_id(userid)
+            userOwner = User.load_user(userid)
             userOwner.add_project(projectid)
             return project
 
@@ -123,7 +123,7 @@ class Project:
             userid: user's id to be added
         Returns: True if user was added, None if user was already in the list, False if user being added doesn't exist, False if DBManager fails
             """
-        new_user = User.load_user_by_id(userid)
+        new_user = User.load_user(userid)
         if new_user is None:
             return False
 
@@ -144,7 +144,7 @@ class Project:
             userid: user's id to be removed
         Returns: True if user was removed, None if user wasn't in the list, False if user being removed doesn't exist, False if DBManager fails
             """
-        old_user = User.load_user_by_id(userid)
+        old_user = User.load_user(userid)
         if old_user is None:
             return False
 
@@ -152,7 +152,7 @@ class Project:
             self.__users.remove(userid)
             updated_project_doc = self.__pack_dict()
             if DBManager.get_instance().update_project_document(updated_project_doc, 'users'):
-                old_user = User.load_user_by_id(userid)
+                old_user = User.load_user(userid)
                 old_user.remove_project(self.__projectid)
                 return True
             else:
