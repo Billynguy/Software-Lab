@@ -136,6 +136,12 @@ class DBManagerImplementation:
         for hwset_doc in self.__get_hwsets_collection().find():
             yield hwset_doc
 
+    def __enter__(self) -> 'DBManagerImplementation':
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
+
 
 class DBManagerMock:
     """Mock class to test the interface of DBManager.
@@ -147,6 +153,11 @@ class DBManagerMock:
         self.__hwsets_collection: list[dict] = []
 
     def close(self) -> None:
+        """Clean up collections for new tests.
+        """
+        self.__users_collection.clear()
+        self.__projects_collection.clear()
+        self.__hwsets_collection.clear()
         pass
 
     def __has_userid(self, userid: str) -> bool:
@@ -196,6 +207,7 @@ class DBManagerMock:
             return False
 
         self.__projects_collection.append(project_document.copy())
+        return True
 
     def update_project_document(self, project_document: dict, update_element: str) -> bool:
         for project_doc in self.__projects_collection:
@@ -243,6 +255,12 @@ class DBManagerMock:
     def get_hwset_documents_as_generator(self) -> dict:
         for hwset_doc in self.__hwsets_collection:
             yield hwset_doc
+
+    def __enter__(self) -> 'DBManagerMock':
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
 
 
 # For the purposes of our Flask app, we probably only need a singleton access.
