@@ -55,7 +55,9 @@ def __project_create_project():
     """
 
     # Verify that the project information is valid.
-    project = Projects.new_project(request.form['name'], request.form['description'], session['userid'])
+    # TODO: Generate a projectid (e.g. by uuid)
+    projectid = request.form['projectname']
+    project = Projects.new_project(projectid, request.form['name'], request.form['description'], session['userid'])
     if project is None:
         return make_response({
             'status': {
@@ -69,7 +71,7 @@ def __project_create_project():
             'success': True,
         },
         'data': {
-            'projectid': project.get_projectid(),
+            'projectid': projectid,
         }
     }, 201)
 
