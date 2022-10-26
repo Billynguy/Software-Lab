@@ -74,7 +74,7 @@ def project_create_project():
     }, 201)
 
 
-@project_bp.post('/project/<uuid:projectid>/authorize-user')
+@project_bp.post('/project/<string:projectid>/authorize-user')
 def project_authorize_user(projectid: str):
     """Receive an authorize user request.
 
@@ -120,7 +120,7 @@ def project_authorize_user(projectid: str):
     }, 200)
 
 
-@project_bp.post('/project/<uuid:projectid>/revoke-user')
+@project_bp.post('/project/<string:projectid>/revoke-user')
 def project_revoke_user(projectid: str):
     """Receive a revoke user request.
 
@@ -165,7 +165,7 @@ def project_revoke_user(projectid: str):
     }, 200)
 
 
-@project_bp.post('/project/<uuid:projectid>/update-resources')
+@project_bp.post('/project/<string:projectid>/update-resources')
 def project_update_resources(projectid: str):
     """Receive an update resources request.
 
@@ -224,7 +224,7 @@ def project_update_resources(projectid: str):
     }, 200)
 
 
-@project_bp.post('/project/<uuid:projectid>/add-resource')
+@project_bp.post('/project/<string:projectid>/add-resource')
 def project_add_resource(projectid: str):
     """Receive an add resource request.
 
@@ -268,7 +268,7 @@ def project_add_resource(projectid: str):
     }, 200)
 
 
-@project_bp.post('/project/<uuid:projectid>/remove-resource')
+@project_bp.post('/project/<string:projectid>/remove-resource')
 def project_remove_resource(projectid: str):
     """Receive a remove resource request.
 
@@ -334,7 +334,7 @@ def project_remove_resource(projectid: str):
 """
 
 
-@project_bp.get('/project/<uuid:projectid>/project-info')
+@project_bp.get('/project/<string:projectid>/project-info')
 def project_get_project_info(projectid: str):
     """Get the project's name, projectid, and description.
 
@@ -373,7 +373,7 @@ def project_get_project_info(projectid: str):
     }, 200)
 
 
-@project_bp.get('/project/<uuid:projectid>/user-list')
+@project_bp.get('/project/<string:projectid>/user-list')
 def project_get_users(projectid: str):
     """Get the project's list of users.
 
@@ -410,7 +410,7 @@ def project_get_users(projectid: str):
     }, 200)
 
 
-@project_bp.get('/project/<uuid:projectid>/is-session-admin')
+@project_bp.get('/project/<string:projectid>/is-session-admin')
 def project_is_admin(projectid: str):
     """Get whether the session user is admin.
 
@@ -447,7 +447,7 @@ def project_is_admin(projectid: str):
     }, 200)
 
 
-@project_bp.get('/project/<uuid:projectid>/resources')
+@project_bp.get('/project/<string:projectid>/resources')
 def project_get_resources(projectid: str):
     """Get the project's list of resources corresponding usage information.
 

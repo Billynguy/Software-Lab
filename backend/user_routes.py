@@ -99,7 +99,7 @@ def user_sign_out():
 """
 
 
-@user_bp.get('/user/<uuid:userid>/user-info')
+@user_bp.get('/user/<string:userid>/user-info')
 def user_get_user_info(userid: str):
     """Get the user's username and userid.
 
@@ -137,7 +137,7 @@ def user_get_user_info(userid: str):
     }, 200)
 
 
-@user_bp.get('/user/<uuid:userid>/project-list')
+@user_bp.get('/user/<string:userid>/project-list')
 def user_get_projects(userid: str):
     """Get the user's list of projects.
 
