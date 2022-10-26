@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 const Create = () => {
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
     const [hwset1, setHwSet1] = useState(0);
     const [hwset2, setHwSet2] = useState(0);
+    const history = useHistory();
     
 
     const handleSubmit = (e) => {
@@ -15,7 +17,9 @@ const Create = () => {
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(project)
-        })
+        }).then(() => {
+            history.push('/');
+        });
 
     }
 

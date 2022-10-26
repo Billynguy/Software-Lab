@@ -11,6 +11,13 @@
       "hwset1": "38/100",
       "hwset2": "26/100",
       "id": 2
+    },
+    {
+      "title": "asdf",
+      "description": "1234324",
+      "hwset1": 0,
+      "hwset2": 0,
+      "id": 3
     }
   ]
 }
