@@ -1,7 +1,7 @@
 from flask import Blueprint, make_response, session, request
-from projects import Projects
+from project import Project
 from user import User
-from hardwareSet import HWSet
+from hardware_set import HWSet
 
 project_bp = Blueprint('project', __name__)
 """Blueprint for api requests related to projects.
@@ -21,7 +21,7 @@ def __project_open_project():
     """
 
     # Verify that the user has access to the project
-    project = Projects.load_project(request.form['projectid'])
+    project = Project.load_project(request.form['projectid'])
     if project is None:
         return make_response({
             'status': {
@@ -57,7 +57,7 @@ def __project_create_project():
     # Verify that the project information is valid.
     # TODO: Generate a projectid (e.g. by uuid)
     projectid = request.form['projectname']
-    project = Projects.new_project(projectid, request.form['name'], request.form['description'], session['userid'])
+    project = Project.new_project(projectid, request.form['name'], request.form['description'], session['userid'])
     if project is None:
         return make_response({
             'status': {
@@ -84,7 +84,7 @@ def __project_authorize_user(projectid: str):
     :return: json response detailing success or failure of authorizing user access
     """
 
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {
@@ -130,7 +130,7 @@ def __project_revoke_user(projectid: str):
     :return: json response detailing success or failure of revoking user access
     """
 
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {
@@ -175,7 +175,7 @@ def __project_update_resources(projectid: str):
     :return: json response detailing success or failure of updating resources
     """
 
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {
@@ -234,7 +234,7 @@ def __project_add_resource(projectid: str):
     :return: json response detailing success or failure of revoking user access
     """
 
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {
@@ -278,17 +278,7 @@ def __project_remove_resource(projectid: str):
     :return: json response detailing success or failure of revoking user access
     """
 
-    # Verify that this request comes from an authorized user
-
-
-    # project.remove_resource(hwset)
-    # return make_response({
-    #     'status': {
-    #         'success': True,
-    #     }
-    # }, 200)
-
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {
@@ -355,7 +345,7 @@ def __project_get_project_info(projectid: str):
     :return: json response with data containing project name, projectid, and description if session user has permission or 404 error if not
     """
 
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {
@@ -394,7 +384,7 @@ def __project_get_users(projectid: str):
     :return: json response with data containing userid if session user has permission or 404 error if not
     """
 
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {
@@ -431,7 +421,7 @@ def __project_is_admin(projectid: str):
     :return: json response with data containing whether if session user is admin or 403 error if not
     """
 
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {
@@ -468,7 +458,7 @@ def __project_get_resources(projectid: str):
     :return: json response with data containing resource information if session user has permission or 404 error if not
     """
 
-    project = Projects.load_project(projectid)
+    project = Project.load_project(projectid)
     if project is None:
         return make_response({
             'status': {

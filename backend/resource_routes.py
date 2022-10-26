@@ -1,5 +1,5 @@
 from flask import Blueprint, make_response
-from hardwareSet import HWSet
+from hardware_set import HWSet
 from db_manager import DBManager
 
 resource_bp = Blueprint('resource', __name__)
