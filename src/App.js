@@ -32,6 +32,9 @@ function App() {
           <Route path="/projects/:id">
             <ProjectDetails /> 
           </Route>
+          <Route path="/projects/:id/resources">
+            <ProjectDetails /> 
+          </Route>
         </Switch>
       </div>
     </Router>

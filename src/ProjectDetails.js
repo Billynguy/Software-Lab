@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import useFetch from './useFetch';
 
 const ProjectDetails = () => {
@@ -17,6 +17,9 @@ const ProjectDetails = () => {
                     <div>
                         <p>HW Set 1: {`${project.hwset1}`}</p>
                         <p>HW Set 2: {`${project.hwset2}`}</p>
+                        <Link to={`/projects/${project.id}/resources`}>
+                            <h2>Resource Page</h2>
+                        </Link>
                     </div>
                 </article>
             )}
