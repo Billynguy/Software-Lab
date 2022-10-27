@@ -9,6 +9,7 @@ import HWSet from './components/ProjectPage/HWSet';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Navbar from './Navbar';
 import Home from './Home';
+import Resources from './Resources';
 import "./index.css"
 import Create from './Create';
 import ProjectDetails from './ProjectDetails';
@@ -33,7 +34,7 @@ function App() {
             <ProjectDetails /> 
           </Route>
           <Route path="/projects/:id/resources">
-            <ProjectDetails /> 
+            <Resources /> 
           </Route>
         </Switch>
       </div>
