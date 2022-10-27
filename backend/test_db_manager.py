@@ -35,16 +35,10 @@ def project_documents_some() -> list[dict]:
             'description': "This is John Doe's first project.",
             'admin': 'jd123',
             'users': ['jd123', ],
-            'hwsets': [
-                {
-                    'name': 'Hardware Set 1',
-                    'checkedOut': 100,
-                },
-                {
-                    'name': 'Hardware Set 2',
-                    'checkedOut': 20,
-                },
-            ],
+            'hwsets': {
+                'Hardware Set 1': 100,
+                'Hardware Set 2': 20,
+            },
         },
         {
             'projectid': 'jp124',
@@ -52,7 +46,7 @@ def project_documents_some() -> list[dict]:
             'description': 'Hello, World!',
             'admin': 'jd124',
             'users': ['jd124', 'jd123', ],
-            'hwsets': [],
+            'hwsets': {},
         },
         {
             'projectid': 'ECE 461L',
@@ -60,16 +54,10 @@ def project_documents_some() -> list[dict]:
             'description': "This is a test project.",
             'admin': 'ece461',
             'users': ['ece461', 'jd123'],
-            'hwsets': [
-                {
-                    'name': 'Hardware Set 1',
-                    'checkedOut': 100,
-                },
-                {
-                    'name': 'Hardware Set 2',
-                    'checkedOut': 80,
-                },
-            ],
+            'hwsets': {
+                'Hardware Set 1': 100,
+                'Hardware Set 2': 80,
+            },
         },
     ]
 
@@ -285,16 +273,10 @@ def test_insert_project_document():
             'description': "This is John Doe's first project.",
             'admin': 'jd123',
             'users': ['jd123'],
-            'hwsets': [
-                {
-                    'name': 'Hardware Set 1',
-                    'checkedOut': 100,
-                },
-                {
-                    'name': 'Hardware Set 2',
-                    'checkedOut': 20,
-                },
-            ],
+            'hwsets': {
+                'Hardware Set 1': 100,
+                'Hardware Set 2': 20,
+            },
         })
         new_project_doc = {
             'projectid': 'pq96',
@@ -302,7 +284,7 @@ def test_insert_project_document():
             'description': 'We have some funny symbols here.',
             'admin': 'jd124',
             'users': ['jd124'],
-            'hwsets': [],
+            'hwsets': {},
         }
         assert db_manager.insert_project_document(new_project_doc) is True
         assert check_has_projectid_list(db_manager, ['jd123', 'jp124', 'ECE 461L', 'pq96'])
@@ -311,7 +293,7 @@ def test_insert_project_document():
             'name': 'Funny Symbols',
             'admin': 'jd124',
             'users': ['jd124'],
-            'hwsets': [],
+            'hwsets': {},
         })
 
         conflict_project_doc = {
@@ -320,7 +302,7 @@ def test_insert_project_document():
             'description': 'This is a different test project.',
             'admin': 'ece461',
             'users': ['ece461', 'jd123'],
-            'hwsets': [],
+            'hwsets': {},
         }
         assert db_manager.insert_project_document(conflict_project_doc) is False
         assert check_has_projectid_list(db_manager, ['jd123', 'jp124', 'ECE 461L', 'pq96'])
@@ -363,7 +345,7 @@ def test_update_project_document():
             'description': 'We have some funny symbols here.',
             'admin': 'jd124',
             'users': ['jd124'],
-            'hwsets': [],
+            'hwsets': {},
         }
         assert db_manager.update_project_document(new_project_doc, 'name') is False
         assert db_manager.update_project_document(new_project_doc, 'description') is False
