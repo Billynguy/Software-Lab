@@ -1,192 +1,159 @@
-import React from "react"; 
+import React, {useState, useEffect} from "react"; 
 import './App.css';
 
-/*
-class Login extends React.Component {
-  logUserIn = () => {
-    // we can access handleLogin from App since it was passed as a prop
-    this.props.handleLogin(true)
+
+
+const LoginBox = (props) => {
+  const [userID, setUserID] = useState("")
+  const [password, setPassword] = useState("")
+  const [success, setSuccess] = useState("")
+  const [displayPopup, setDisplayPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
+
+  const encrypt = (unencryptedText) => {
+    // TODO: Encrypt the text
+    const encryptedText = unencryptedText;
+    return encryptedText
   }
 
-  dontLogUserIn = () => {
-    alert('Thank you for your honesty.')
-    this.props.handleLogin(false)
+  const handleSuccessfulLogin = () => {
+    // TODO: Redirect to next page
   }
 
-  render() {
-    return (
-      <div>
-        <h1>Please "log in"</h1>
-        <p>Do you have permission to use this site?</p>
-        <button onClick={this.logUserIn}>Yes</button>
-        <button onClick={this.dontLogUserIn}>No</button>
-      </div>
-    )
-  }
-}
-*/
+  const handleSubmit = () => {
+    if(props.submitText === "Log In!"){
+      props.onLogin()
+      //console.log("Logging in user "+userID+" with password "+password+" ...")
+      //setPopupText("Logging in user "+userID+" with password "+password+" ...")
+      setPopupText("Logging in ...")
+      setDisplayPopup(true)
+      if(userID === "" || password === ""){
+        // TODO: Handle error
+      }
+      fetch("/login/"+encrypt(userID)+"/"+encrypt(password)).then(response => response.json()).then(
+        data => {
+          setPopupText(data.success)
+          setDisplayPopup(true)
 
-
-function SubmitButton(props){ 
-  return (
-    <button className="submitButton" onClick={props.onClick}>
-      {props.submitText}
-    </button>
-    );
-}
-
-function UserIDTextBox(props){ 
-  return (
-    <input className="userIDTextBox" type="text" value="" onChange={props.onChange}></input>
-    );
-}
-
-function PasswordTextBox(props){ 
-  return (
-      <input className="passwordTextBox" type="text" value="" onChange={props.onChange}></input>
-    );
-}
-
-class LoginBox extends React.Component{
-  constructor(props){
-    super(props)
-    this.state = {
-      userID: "",
-      password: "",
-      success: false,
-    }
-  }
-
-  handleSubmit(){
-    if(this.props.submitText.equals("Log In!")){
-      this.props.onLogin()
+        }
+      )
     }
     else{
-      this.props.onCreate()
+      props.onCreateAcc()
+      //console.log("Creating user "+userID+" with password "+password+" ...")
+      //setPopupText("Creating user "+userID+" with password "+password+" ...")
+      setPopupText("Creating user ...")
+      setDisplayPopup(true)
+      if(userID === "" || password === ""){
+        // TODO: Handle error
+      }
+      fetch("/createAccount/"+encrypt(userID)+"/"+encrypt(password)).then(response => response.json()).then(
+        data => {
+          setPopupText(data.success)
+          setDisplayPopup(true)
+        }
+      )
     }
   }
 
-  changeUserIDInput(){
-    // TODO: get text input
+  const changeUserIDInput = (e) => {
+    setUserID(e.target.value)
   }
 
-  changePasswordInput(){
-    // TODO: get text input
+  const changePasswordInput = (e) => {
+    setPassword(e.target.value)
   }
 
-
-  renderUserIDTextBox() {
+  const renderUserIDTextBox = () => {
+    // TODO: Ensure that there is text in the box
     return (
       <div>
         <p>UserID:</p>
-        <UserIDTextBox
-          onChange={this.changeUserIDInput()}
-        />
+        <input className="userIDTextBox" type="text" value={userID} onChange={changeUserIDInput}></input>
       </div>
     );
   }
 
-  renderPasswordTextBox() {
+  const renderPasswordTextBox = () => {
+    // TODO: Ensure that there is text in the box
     return (
       <div>
         <p>Password:</p>
-        <PasswordTextBox
-          onChange={this.changePasswordInput()}
-        />
+        <input className="passwordTextBox" type="text" value={password} onChange={changePasswordInput}></input>
       </div>
     );
   }
-
   
-
-  renderSubmitButton(){
+  const renderSubmitButton = () => {
     return (
-      <SubmitButton
-        submitText={this.props.submitText}
-        onClick={() => this.handleSubmit()}
-      />
+      <button className="submitButton" onClick={handleSubmit}>
+        {props.submitText}
+      </button>
     );
   }
 
-
-  render(){
-    return (
-      <div className="LoginBox">
-        {this.renderUserIDTextBox()}
-        {this.renderPasswordTextBox()}
-        {this.renderSubmitButton()}
-      </div>
-    );
-  }
+  return (
+    <div className="LoginBox">
+      {renderUserIDTextBox()}
+      {renderPasswordTextBox()}
+      {renderSubmitButton()}
+      {displayPopup && <h5>{popupText}</h5>}
+    </div>
+  );
 }
 
 
-class LoginPage extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      userID: "",
-      password: "",
-      validLogin: false,
-      createAccount: false,
-    }
-  }
+const LoginPage = () => {
+  const [userID, setUserID] = useState("")
+  const [password, setPassword] = useState("")
+  const [validLogin, setValidLogin] = useState(false)
+  const [createAccount, setCreateAccount] = useState(false);
+  const [displayPopup, setDisplayPopup] = useState(false);
+  const [popupText, setPopupText] = useState("");
 
-  /*
-  handleLogin = (loggedIn) => {
-    this.setState({
-      isLoggedIn: loggedIn
-    })
-  }
-  */
+  const handleLogin = () => {
 
-  handleLogin(){
-    // TODO: Login method
-  }
+  };
 
-  handleCreateNewAccount(){
-    // TODO: Create New Account method
-  }
+  const handleCreateNewAccount = () => {
+    
+  };
 
-
-  renderLoginBox(){
+  const renderLoginBox = () => {
     return (
       <LoginBox
         submitText={"Log In!"}
-        onLogin={() => this.handleLogin()}
+        onLogin={handleLogin}
       />
     );
-  }
+  };
 
-  renderNewUserBox(){
+  const renderNewUserBox = () => {
     return (
       <LoginBox
         submitText={"Create Account!"}
-        onCreateAcc={() => this.handleCreateNewAccount()}
+        onCreateAcc={handleCreateNewAccount}
       />
     );
-  }
+  };
 
-  render() {
-    return (
-        <div className="LoginPage">
-          <h1>Login Page:</h1>
-          {this.renderLoginBox()}
-          <div></div>
-          <h2>New User? </h2>
-          {this.renderNewUserBox()}
-        </div>
-    );
-    /*
-    if (this.state.isLoggedIn) {
-      return (<Projects />)
-    }
-    else {
-      // Login needs to be able to mutate the login state, so we pass it handleLogin as a prop
-      return (<Login handleLogin={this.handleLogin}/>)
-    }
-    */
-  }
+  return (
+    <div className="LoginPage">
+      <h1>Login Page:</h1>
+      {renderLoginBox()}
+      <div></div>
+      <h2>New User? </h2>
+      {renderNewUserBox()}
+    </div>
+  );
+
+
 }
 
-export default LoginPage;
+const App = () => {
+  return (
+    <LoginPage/>
+  );
+}
+
+export default App;
