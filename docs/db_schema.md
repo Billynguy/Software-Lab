@@ -19,6 +19,7 @@ Non-standard types used in the schemas for semantic purposes. They are listed he
 | `userid_t` | `str` | Unique identity of a user. |
 | `projectid_t` | `str` | Unique identity of a project. |
 | `hwsetname_t` | `str` | Unique name of a hardware set. |
+| `checkedOut_t` | `int` | Number of resources checked out by a project.
 
 ## Documents in `Users` Collection
 
@@ -40,10 +41,12 @@ Non-standard types used in the schemas for semantic purposes. They are listed he
     "description": str,
     "admin": userid_t,
     "users": [userid_t],
-    "hwsets": [{
-        "name": hwsetname_t,
-        "checkedOut": int,
-    }],
+    "hwsets": {
+        "hwsetname_t": checkedOut_t,
+        "hwsetname_t": checkedOut_t,
+        "hwsetname_t": checkedOut_t,
+        // ...
+    },
 }
 ```
 
@@ -54,9 +57,11 @@ Non-standard types used in the schemas for semantic purposes. They are listed he
     "name": hwsetname_t,
     "capacity": int,
     "availability": int,
-    "projects": [{
-        "projectid": projectid_t,
-        "checkedOut": int,
-    }],
+    "projects": {
+        "projectid_t": checkedOut_t,
+        "projectid_t": checkedOut_t,
+        "projectid_t": checkedOut_t,
+        // ...
+    },
 }
 ```
