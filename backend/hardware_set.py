@@ -103,9 +103,9 @@ class HWSet:
         return self.__availability
 
     def get_projects(self) -> dict[str, int]:
-        """Return a list of projects that is renting out from this hardware set
-        This list is a copy so that client code cannot modify the internal list
-        Returns: A copy of projects list
+        """Return a dict of projects that is renting out from this hardware set
+        This dict is a copy so that client code cannot modify the internal dict
+        Returns: A copy of projects dict
         """
         return self.__projects.copy()
 

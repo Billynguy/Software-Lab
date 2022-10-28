@@ -70,31 +70,19 @@ def hwset_documents_some() -> list[dict]:
             'name': 'Hardware Set 1',
             'capacity': 500,
             'availability': 300,
-            'projects': [
-                {
-                    'projectid': 'jd123',
-                    'checkedOut': 100,
-                },
-                {
-                    'projectid': 'ECE 461L',
-                    'checkedOut': 100,
-                },
-            ],
+            'projects': {
+                'jd123': 100,
+                'ECE 461L': 100,
+            },
         },
         {
             'name': 'Hardware Set 2',
             'capacity': 377,
             'availability': 277,
-            'projects': [
-                {
-                    'projectid': 'jd123',
-                    'checkedOut': 20,
-                },
-                {
-                    'projectid': 'ECE 461L',
-                    'checkedOut': 80,
-                },
-            ],
+            'projects': {
+                'jd123': 20,
+                'ECE 461L': 80,
+            },
         },
     ]
 
@@ -390,23 +378,17 @@ def test_insert_hwset_document():
             'name': 'Hardware Set 1',
             'capacity': 500,
             'availability': 300,
-            'projects': [
-                {
-                    'projectid': 'jd123',
-                    'checkedOut': 100,
-                },
-                {
-                    'projectid': 'ECE 461L',
-                    'checkedOut': 100,
-                },
-            ]
+            'projects': {
+                'jd123': 100,
+                'ECE 461L': 100,
+            },
         })
 
         new_hwset_doc = {
             'name': 'New Super HWSet',
             'capacity': 999,
             'availability': 999,
-            'projects': [],
+            'projects': {},
         }
         assert db_manager.insert_hwset_document(new_hwset_doc) is True
         assert check_has_hwsetname_list(db_manager, ['Hardware Set 1', 'Hardware Set 2', 'New Super HWSet'])
@@ -414,29 +396,27 @@ def test_insert_hwset_document():
             'name': 'New Super HWSet',
             'capacity': 999,
             'availability': 999,
-            'projects': [],
+            'projects': {},
         })
 
         conflict_hwset_doc = {
             'name': 'Hardware Set 1',
             'capacity': 600,
             'availability': 600,
-            'projects': [],
+            'projects': {},
         }
-        warnings.warn('Inserting a new hardware set with the same name is permitted but discouraged.')
-        # assert db_manager.insert_hwset_document(conflict_hwset_doc) is False
-        # assert check_has_hwsetname_list(db_manager, ['Hardware Set 1', 'Hardware Set 2', 'New Super HWSet'])
-        # assert not check_hwset_matches(db_manager, {
-        #     'name': 'Hardware Set 1',
-        #     'capacity': 600,
-        # })
-        # assert check_hwset_matches(db_manager, {
-        #     'name': 'Hardware Set 1',
-        #     'capacity': 500,
-        #     'availability': 300,
-        # })
-        assert db_manager.insert_hwset_document(conflict_hwset_doc) is True
+        warnings.warn('Inserting a new hardware set with the same name should fail.')
+        assert db_manager.insert_hwset_document(conflict_hwset_doc) is False
         assert check_has_hwsetname_list(db_manager, ['Hardware Set 1', 'Hardware Set 2', 'New Super HWSet'])
+        assert not check_hwset_matches(db_manager, {
+            'name': 'Hardware Set 1',
+            'capacity': 600,
+        })
+        assert check_hwset_matches(db_manager, {
+            'name': 'Hardware Set 1',
+            'capacity': 500,
+            'availability': 300,
+        })
 
 
 def test_update_hwset_document():
