@@ -1,5 +1,6 @@
 from typing import Optional
 from db_manager import DBManager
+from werkzeug import security
 
 
 class User:
@@ -36,7 +37,7 @@ class User:
         user = User()
         user.__username = username
         user.__userid = userid
-        user.__password = password
+        user.__password = security.generate_password_hash(password)
 
         user_doc = user.__pack_dict()
 
@@ -71,7 +72,7 @@ class User:
         return self.__userid
 
     def matches_password(self, password: str) -> bool:
-        return self.__password == password
+        return security.check_password_hash(self.__password, password)
 
     def get_projects(self) -> list[str]:
         """Return a list of projects the user has access to.

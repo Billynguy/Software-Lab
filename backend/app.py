@@ -1,4 +1,5 @@
 from flask import Flask
+import atexit
 
 
 # Entry point
@@ -15,3 +16,10 @@ def create_app():
     app.register_blueprint(api_bp)
 
     return app
+
+
+@atexit.register
+def destroy_app() -> None:
+    # Close singleton instance
+    from db_manager import DBManager
+    DBManager.get_instance().close()

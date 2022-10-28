@@ -2,6 +2,12 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
 from typing import Optional
+from dotenv import load_dotenv
+import os
+
+
+# Load secrets from .env
+load_dotenv()
 
 
 # For the purposes of our Flask app, we probably only need a singleton access.
@@ -27,7 +33,9 @@ class DBManager:
         The connection should be `close`'d if directly constructed.
         """
         self.__client: MongoClient = MongoClient(
-            'mongodb+srv://lphadmin:<password>@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
+            f'mongodb+srv://{os.environ["MONGODB_USERNAME"]}:{os.environ["MONGODB_PASSWORD"]}'
+            f'@{os.environ["MONGODB_CLUSTER_ADDRESS"]}/?retryWrites=true&w=majority'
+        )
         self.__db: Database = self.__client['Cluster0']
         self.__users_collection: Collection = self.__db['Users']
         self.__projects_collection: Collection = self.__db['Projects']
