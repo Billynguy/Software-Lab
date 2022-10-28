@@ -4,5 +4,8 @@ __pycache__/
 # Virtual environment
 venv/
 
+# dotenv
+.env
+
 # PyCharm
 .idea/

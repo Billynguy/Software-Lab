@@ -1,130 +1,164 @@
-from flask import Blueprint, redirect, make_response, session
-
-user_bp = Blueprint('user', __name__)
-"""Blueprint for api requests related to users.
-"""
-
-"""User operations.
-"""
+from typing import Optional
+from db_manager import DBManager
+from werkzeug import security
 
 
-@user_bp.post('/sign-in')
-def __user_sign_in():
-    """Sign in the user.
-
-    Verify that the sign-in information is valid.
-    :return: url redirection to the project selection page if valid or the sign-in page if invalid
+class User:
+    """Back-end representation of a user.
+    A User object can go out of sync especially in concurrent situations.
+    Therefore, the object should be used only temporarily.
     """
 
-    # Verify that the sign-in information is valid
-    # if request.info in user_collection and user_document.matches(request.info):
-    #     session['userid'] = request.userid
-    #     return redirect('/projects')
-    return redirect('/login')
+    def __init__(self):
+        """Client code should not directly call the constructor.
+        Rather, client code should prefer the static `new_user` and `load_user` methods.
+        """
+        self.__username: str = ''
+        self.__userid: str = ''
+        self.__password: str = ''
+        self.__projects: list[str] = []
+        """This is a list of project ids."""
+
+    @staticmethod
+    def new_user(username: str, userid: str, password: str) -> Optional['User']:
+        """Create and return a new user with the given parameters.
+        Client code should use this static method instead of calling the constructor when creating a new user.
+        Fails if another user with the same user id exists.
+
+        Args:
+            username: Username of the user
+            userid: User id of the user
+            password: Password of the user
+
+        Returns: User object representing the newly created user, None if another user with the same user id exists
+
+        """
+
+        user = User()
+        user.__username = username
+        user.__userid = userid
+        user.__password = security.generate_password_hash(password)
+
+        user_doc = user.__pack_dict()
+
+        # Check that another user with the same userid does not exist
+        if DBManager.get_instance().insert_user_document(user_doc):
+            return user
+
+        return None
+
+    @staticmethod
+    def load_user(userid: str) -> Optional['User']:
+        """Load a User object from its user id.
+        Client code should use this static method instead of calling the constructor when loading a user.
+        Fails if there is no user with the user id.
+        Args:
+            userid: User id of the user to load
+        Returns: User object represented by the user id, None if no such user exists
+        """
+
+        user_doc = DBManager.get_instance().get_user_document_by_id(userid)
+        if user_doc is None:
+            return None
+
+        user_obj = User()
+        user_obj.__unpack_dict(user_doc)
+        return user_obj
+
+    def get_username(self) -> str:
+        return self.__username
+
+    def get_userid(self) -> str:
+        return self.__userid
+
+    def matches_password(self, password: str) -> bool:
+        return security.check_password_hash(self.__password, password)
+
+    def get_projects(self) -> list[str]:
+        """Return a list of projects the user has access to.
+        This list is a copy so that client code cannot modify the internal list
+
+        Returns: A copy of the projects list
+
+        """
+        return self.__projects.copy()
+
+    def add_project(self, projectid: str) -> bool:
+        """Add a project to the list the user has access to.
+        Note: This method should not be called directly by the client since it does not actually grant the user access.
+        Instead, the Project object should add the user to its authorized list and call this method on the user.
+
+        Args:
+            projectid: Project id that the user will gain access to
+
+        Returns: True if successful, False otherwise
+
+        """
+        existed = projectid in self.__projects
+        if not existed:
+            self.__projects.append(projectid)
+            updated_user_doc = self.__pack_dict()
+            DBManager.get_instance().update_user_document(updated_user_doc, 'projects')
+
+        return not existed
+
+    def remove_project(self, projectid: str) -> bool:
+        """Remove a project to the list the user has access to.
+        Note: This method should not be called directly by the client since it does not actually remove the user access.
+        Instead, the Project object should remove the user to its authorized list and call this method on the user.
+
+        Args:
+            projectid: Project id that the user will remove access to
+
+        Returns: True if successful, False otherwise
+
+        """
+        existed = projectid in self.__projects
+        if existed:
+            self.__projects.remove(projectid)
+            updated_user_doc = self.__pack_dict()
+            DBManager.get_instance().update_user_document(updated_user_doc, 'projects')
+
+        return existed
+
+    def __pack_dict(self) -> dict:
+        """Form a dict to insert into the database.
+        """
+        return {
+            'username': self.__username,
+            'userid': self.__userid,
+            'password': self.__password,
+            'projects': self.__projects,
+        }
+
+    def __unpack_dict(self, user_dict: dict) -> None:
+        """Retrieve information from a dict stored in the database.
+        """
+        self.__username = user_dict['username']
+        self.__userid = user_dict['userid']
+        self.__password = user_dict['password']
+        self.__projects = user_dict['projects']
 
 
-@user_bp.post('/sign-up')
-def __user_sign_up():
-    """Sign up a new account.
+# Example client code
+if __name__ == '__main__':
+    my_user = User.new_user(username='Johnny B', userid='jb123', password='password123')
+    print(f'Created new User: {my_user}')
+    # my_user = User.load_user('jd123')
+    # print(f'Loaded an existing user: {my_user}')
 
-    Verify that the sign-up information is valid.
-    :return: url redirection to the project selection page if valid or the sign-up page if invalid
-    """
+    print(f'No projects: {my_user.get_projects()}')
+    print(f'Adding a project: {my_user.add_project("pj123")}')
+    print(f'One project: {my_user.get_projects()}')
+    print(f'Adding same project: {my_user.add_project("pj123")}')
+    print(f'One project: {my_user.get_projects()}')
+    print(f'Removing project: {my_user.remove_project("pj123")}')
+    print(f'No projects: {my_user.get_projects()}')
+    print(f'Removing same project: {my_user.remove_project("pj123")}')
+    print(f'No projects: {my_user.get_projects()}')
 
-    # Verify that the sign-up information is valid
-    # if request.info not in user_collection:
-    #     user_collection.add(create_user_document(request.info))
-    #     session['userid'] = request.userid
-    #     return redirect('/projects')
-    return redirect('/login')
-
-
-@user_bp.get('/sign-out')
-def __user_sign_out():
-    """Sign out the user.
-
-    Clear the session user.
-    :return: url redirection to login page
-    """
-
-    session.clear()
-    return redirect('/login')
-
-
-"""User information.
-"""
-
-
-@user_bp.get('/user/<uuid:userid>/user-info')
-def __user_get_user_info(userid: str):
-    """Get the user's username and userid.
-
-    Session user must have permission.
-    We make all types of errors look identical to make it harder to reverse engineer.
-    :return: json response with data containing username and userid if session user has permission or 404 error if not
-    """
-
-    # Verify that the session user has permission (session user must be the same user)
-    if session['userid'] != userid:
-        return make_response({
-            'status': {
-                'success': False,
-                'reason': 'Unable to get user information.',
-            }
-        }, 404)
-
-    # user = get_user_collection().get_user(userid)
-    # if user is None:
-    #     return make_response({
-    #         'status': {
-    #             'success': False,
-    #             'reason': 'Unable to get user information.',
-    #         }
-    #     }, 404)
-
-    # return make_response({
-    #     'status': {
-    #         'success': True,
-    #     },
-    #     'data': {
-    #         'username': user.get_username(),
-    #         'userid': user.get_userid(),
-    #     }
-    # }, 200)
-
-
-@user_bp.get('/user/<uuid:userid>/project-list')
-def __user_get_projects(userid: str):
-    """Get the user's list of projects.
-
-    Session user must have permission.
-    We make all types of errors look identical to make it harder to reverse engineer.
-    :return: json response with data containing projectid if session user has permission or 404 error if not
-    """
-
-    # Verify that the session user has permission (session user must be the same user)
-    if session['userid'] != userid:
-        return make_response({
-            'status': {
-                'success': False,
-                'reason': 'Unable to get user information.',
-            }
-        }, 404)
-
-    # user = get_user_collection().get_user(userid)
-    # if user is None:
-    #     return make_response({
-    #         'status': {
-    #             'success': False,
-    #             'reason': 'Unable to get user information.',
-    #         }
-    #     }, 404)
-
-    # return make_response({
-    #     'status': {
-    #         'success': True,
-    #     },
-    #     'data': {
-    #         'projects': user.get_project_list()
-    #     }
-    # }, 200)
+    try:
+        # print('User.load_user is not implemented')
+        my_user_again = User.load_user('jd123')
+    except NotImplementedError as e:
+        pass

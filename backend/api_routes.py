@@ -1,7 +1,7 @@
 from flask import Blueprint, request
-from user import user_bp
-from project import project_bp
-from resource import resource_bp
+from user_routes import user_bp
+from project_routes import project_bp
+from resource_routes import resource_bp
 
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 """Blueprint for all api-related routes.
