@@ -30,7 +30,7 @@ function App() {
           <Route path="/create">
             <Create />
           </Route>
-          <Route path="/projects/:id">
+          <Route exact path="/projects/:id">
             <ProjectDetails /> 
           </Route>
           <Route path="/projects/:id/resources">
