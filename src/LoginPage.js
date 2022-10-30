@@ -7,7 +7,7 @@ import './LoginPage.css';
 const LoginBox = (props) => {
   const [userID, setUserID] = useState("")
   const [password, setPassword] = useState("")
-  const [success, setSuccess] = useState(false)
+  const [success, setSuccess] = useState(true)
   const [displayPopup, setDisplayPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const history = useHistory(); 
