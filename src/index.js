@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './LoginPage.css';
-import LoginPage from './LoginPage';
+import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<LoginPage />);
+root.render(<App />);

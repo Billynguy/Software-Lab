@@ -13,6 +13,7 @@ import Resources from './Resources';
 import "./index.css"
 import Create from './Create';
 import ProjectDetails from './ProjectDetails';
+import LoginPage from './LoginPage';
 // ----------------- End Project Page Imports ---------------
 
 
@@ -20,11 +21,14 @@ import ProjectDetails from './ProjectDetails';
 function App() {
   return (
     <Router>
+      <Route exact path="/">
+        <LoginPage />
+      </Route>
       <div className="App">
         <Navbar />
         <div className="content"></div>
         <Switch>
-          <Route exact path="/">
+          <Route exact path="/home">
             <Home />
           </Route>
           <Route path="/create">
