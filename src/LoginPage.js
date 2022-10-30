@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react"; 
-import './App.css';
+import './LoginPage.css';
 
 
 
@@ -149,11 +149,4 @@ const LoginPage = () => {
 
 
 }
-
-const App = () => {
-  return (
-    <LoginPage/>
-  );
-}
-
-export default App;
+export default LoginPage;
