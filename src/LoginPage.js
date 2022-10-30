@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react"; 
+import {useHistory} from "react-router-dom";
 import './LoginPage.css';
 
 
@@ -9,6 +10,7 @@ const LoginBox = (props) => {
   const [success, setSuccess] = useState("")
   const [displayPopup, setDisplayPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
+  const history = useHistory(); 
 
   const encrypt = (unencryptedText) => {
     // TODO: Encrypt the text
@@ -18,6 +20,7 @@ const LoginBox = (props) => {
 
   const handleSuccessfulLogin = () => {
     // TODO: Redirect to next page
+    history.push("/home");
   }
 
   const handleSubmit = () => {
@@ -30,11 +33,12 @@ const LoginBox = (props) => {
       if(userID === "" || password === ""){
         // TODO: Handle error
       }
+      handleSuccessfulLogin()
       fetch("/login/"+encrypt(userID)+"/"+encrypt(password)).then(response => response.json()).then(
         data => {
           setPopupText(data.success)
           setDisplayPopup(true)
-
+          handleSuccessfulLogin()
         }
       )
     }
@@ -46,11 +50,14 @@ const LoginBox = (props) => {
       setDisplayPopup(true)
       if(userID === "" || password === ""){
         // TODO: Handle error
+        
       }
+      handleSuccessfulLogin()
       fetch("/createAccount/"+encrypt(userID)+"/"+encrypt(password)).then(response => response.json()).then(
         data => {
           setPopupText(data.success)
           setDisplayPopup(true)
+          handleSuccessfulLogin()
         }
       )
     }
