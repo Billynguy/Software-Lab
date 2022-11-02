@@ -25,7 +25,7 @@ function App() {
         <LoginPage />
       </Route>
       <div className="App">
-        <Navbar />
+        <Route render={({location}) => ['/'].includes(location.pathname) ? null : <Navbar />} />
         <div className="content"></div>
         <Switch>
           <Route exact path="/home">
