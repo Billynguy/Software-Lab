@@ -7,7 +7,7 @@ import './LoginPage.css';
 const LoginBox = (props) => {
   const [userID, setUserID] = useState("")
   const [password, setPassword] = useState("")
-  const [success, setSuccess] = useState("")
+  const [success, setSuccess] = useState(true)
   const [displayPopup, setDisplayPopup] = useState(false);
   const [popupText, setPopupText] = useState("");
   const history = useHistory(); 
@@ -18,9 +18,19 @@ const LoginBox = (props) => {
     return encryptedText
   }
 
-  const handleSuccessfulLogin = () => {
+  const handleLogin = () => {
     // TODO: Redirect to next page
-    history.push("/home");
+    if(success){
+      history.push("/home");
+    }
+    else if(props.submitText === "Log In!"){
+      setPopupText("Unsuccessful Login. Reason: " + popupText)
+      history.push("/");
+    }
+    else{
+      setPopupText("Unsuccessful Creation. Reason: " + popupText)
+      history.push("/");
+    }
   }
 
   const handleSubmit = () => {
@@ -33,12 +43,16 @@ const LoginBox = (props) => {
       if(userID === "" || password === ""){
         // TODO: Handle error
       }
-      handleSuccessfulLogin()
-      fetch("/login/"+encrypt(userID)+"/"+encrypt(password)).then(response => response.json()).then(
+      handleLogin()
+      const form = new FormData();
+      form.append('userid', encrypt(userID));
+      form.append('password', encrypt(password));
+      fetch("/api/sign-in", {method: "POST", body: form}).then(response => response.json()).then(
         data => {
-          setPopupText(data.success)
+          setPopupText(data.status.reason)
           setDisplayPopup(true)
-          handleSuccessfulLogin()
+          setSuccess(data.status.success)
+          handleLogin()
         }
       )
     }
@@ -52,12 +66,16 @@ const LoginBox = (props) => {
         // TODO: Handle error
         
       }
-      handleSuccessfulLogin()
-      fetch("/createAccount/"+encrypt(userID)+"/"+encrypt(password)).then(response => response.json()).then(
+      handleLogin()
+      const form = new FormData();
+      form.append('userid', encrypt(userID));
+      form.append('password', encrypt(password));
+      fetch("/api/sign-up", {method: "POST", body: form}).then(response => response.json()).then(
         data => {
-          setPopupText(data.success)
+          setPopupText(data.status.reason)
           setDisplayPopup(true)
-          handleSuccessfulLogin()
+          setSuccess(data.status.success)
+          handleLogin()
         }
       )
     }
