@@ -67,7 +67,6 @@ def user_sign_up():
             }
         }, 405)
 
-    # TODO: Encrypt password
     # Note: Inserts new document into database
     User.new_user(request.form['username'], request.form['userid'], request.form['password'])
 

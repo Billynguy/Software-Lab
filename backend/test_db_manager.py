@@ -7,19 +7,22 @@ def user_documents_some() -> list[dict]:
         {
             'userid': 'jd123',
             'username': 'John Doe',
-            'password': 'password123',
+            # Password is 'password123'
+            'password': 'pbkdf2:sha256:260000$YzfiDWPGT4a539En$c2bac2c14f5f51ab1f57be178c6a406c749f3fc46c6bfa7aab06d843ae5cf55f',
             'projects': ['jd123', 'ECE 461L', ],
         },
         {
             'userid': 'jd124',
             'username': 'Jane Doe',
-            'password': '8017d697e018d804f2436a3aaa8936ed57b75074',
+            # Password is '8017d697e018d804f2436a3aaa8936ed57b75074'
+            'password': 'pbkdf2:sha256:260000$t24LYP3cVG6ne2ii$5957fa81790f193807a38858bb425315e5b4354b96bef7836a032a4506fb2ddb',
             'projects': ['jd123', 'jp124', ],
         },
         {
             'userid': 'ece461',
             'username': 'Test User',
-            'password': '8017d697e018d804f2436a3aaa8936ed57b75074',
+            # Password is '8017d697e018d804f2436a3aaa8936ed57b75074'
+            'password': 'pbkdf2:sha256:260000$t24LYP3cVG6ne2ii$5957fa81790f193807a38858bb425315e5b4354b96bef7836a032a4506fb2ddb',
             'projects': ['ECE 461L', ],
         },
     ]
@@ -152,13 +155,15 @@ def test_insert_user_document():
         assert check_user_matches(db_manager, {
             'userid': 'jd123',
             'username': 'John Doe',
-            'password': 'password123',
+            # Password is 'password123'
+            'password': 'pbkdf2:sha256:260000$YzfiDWPGT4a539En$c2bac2c14f5f51ab1f57be178c6a406c749f3fc46c6bfa7aab06d843ae5cf55f',
             'projects': ['jd123', 'ECE 461L'],
         })
         new_user_doc = {
             'userid': 'az78705',
             'username': 'Alice Zoey',
-            'password': 'bRQ$v&)+',
+            # Password is 'bRQ$v&+'
+            'password': 'pbkdf2:sha256:260000$OSQJM8VSXhrRFIJQ$d82f3cb7e3a37f0126bfd0cea0f679a80054f90e13146a7c5e091c5608b758d9',
             'projects': [],
         }
         assert db_manager.insert_user_document(new_user_doc) is True
@@ -172,7 +177,8 @@ def test_insert_user_document():
         conflict_user_doc = {
             'userid': 'jd123',
             'username': 'JD',
-            'password': 'j%36mVK*',
+            # Password is 'j%36mVK*'
+            'password': 'pbkdf2:sha256:260000$N2cGfHdMQFQxaHtC$d1925b63379171e89173dd4022ed491236890043369295157e0871f867364fbd',
             'projects': [],
         }
         assert db_manager.insert_user_document(conflict_user_doc) is False
@@ -195,25 +201,29 @@ def test_update_user_document():
         existing_user_doc = {
             'userid': 'jd123',
             'username': 'JD',
-            'password': 'j%36mVK*',
+            # Password is 'j%36mVK*'
+            'password': 'pbkdf2:sha256:260000$N2cGfHdMQFQxaHtC$d1925b63379171e89173dd4022ed491236890043369295157e0871f867364fbd',
         }
         assert db_manager.update_user_document(existing_user_doc, 'username') is True
         assert check_user_matches(db_manager, {
             'userid': 'jd123',
             'username': 'JD',
-            'password': 'password123',
+            # Password is 'password123'
+            'password': 'pbkdf2:sha256:260000$YzfiDWPGT4a539En$c2bac2c14f5f51ab1f57be178c6a406c749f3fc46c6bfa7aab06d843ae5cf55f',
         })
         assert db_manager.update_user_document(existing_user_doc, 'password') is True
         assert check_user_matches(db_manager, {
             'userid': 'jd123',
             'username': 'JD',
-            'password': 'j%36mVK*',
+            # Password is 'j%36mVK*'
+            'password': 'pbkdf2:sha256:260000$N2cGfHdMQFQxaHtC$d1925b63379171e89173dd4022ed491236890043369295157e0871f867364fbd',
         })
 
         new_user_doc = {
             'userid': 'az78705',
             'username': 'Alice Zoey',
-            'password': 'bRQ$v&)+',
+            # Password is 'bRQ$v&+'
+            'password': 'pbkdf2:sha256:260000$OSQJM8VSXhrRFIJQ$d82f3cb7e3a37f0126bfd0cea0f679a80054f90e13146a7c5e091c5608b758d9',
             'projects': [],
         }
         assert db_manager.update_user_document(new_user_doc, 'username') is False

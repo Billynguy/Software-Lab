@@ -3,9 +3,14 @@ from pymongo.collection import Collection
 from pymongo.database import Database
 from typing import Optional
 from abc import ABC, abstractmethod
+from dotenv import load_dotenv
+import os
 
 """We have a DBManager abstract class from which the DBManagerImplementation and DBManagerMock classes override.
 """
+
+# Load secrets from .env
+load_dotenv()
 
 
 class DBManagerImplementation:
@@ -18,7 +23,9 @@ class DBManagerImplementation:
         The connection should be `close`'d if directly constructed.
         """
         self.__client: MongoClient = MongoClient(
-            'mongodb+srv://lphadmin:<password>@lph.m8yzz0g.mongodb.net/?retryWrites=true&w=majority')
+            f'mongodb+srv://{os.environ["MONGODB_USERNAME"]}:{os.environ["MONGODB_PASSWORD"]}'
+            f'@{os.environ["MONGODB_CLUSTER_ADDRESS"]}/?retryWrites=true&w=majority'
+        )
         self.__db: Database = self.__client['Cluster0']
         self.__users_collection: Collection = self.__db['Users']
         self.__projects_collection: Collection = self.__db['Projects']
@@ -275,15 +282,13 @@ class DBManager(ABC):
     }
 
     @classmethod
-    def get_instance(cls, underlying_class: type = None) -> 'DBManager':
+    def get_instance(cls, underlying_class: type = DBManagerImplementation) -> 'DBManager':
         """Get the singleton instance.
         This instance should be closed only on exit.
         """
 
         if cls.__singleton['__instance'] is None:
-            if underlying_class is not None:
-                cls.__singleton['__underlying_class'] = underlying_class
-
+            cls.__singleton['__underlying_class'] = underlying_class
             cls.__singleton['__instance'] = cls.__singleton['__underlying_class']()
 
         return cls.__singleton['__instance']
