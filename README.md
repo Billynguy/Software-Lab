@@ -16,17 +16,7 @@ venv/Scripts/activate # For Windows, or `source venv/bin/activate` on non-Window
 pip install -r requirements.txt
 ```
 
-Also, you will need to create a `.env` file that looks like the following with appropriate substitution:
-
-```env
-# MongoDB Atlas connection string variables
-MONGODB_USERNAME=<username>
-MONGODB_PASSWORD=<password>
-MONGODB_CLUSTER_ADDRESS=<cluster-address>
-
-# Flask secret key
-FLASK_SECRET_KEY=<some-generated-key>
-```
+Also, you will need to create a `.env` file. You can either run `py -3 env-setup.py` (for Windows, or `python3 env-setup.py` on non-Windows systems) or manually create a `.env` file that looks like the `.env.template` file with appropriate substitution.
 
 After preparing the requirements, make sure you activate the virtual environment. Then, you can run the back-end Flask app:
 
