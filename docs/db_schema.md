@@ -12,22 +12,32 @@
 
 > The following schemas are just an example and may be subject to change.
 
-Non-standard types used in the schemas for semantic purposes. They are listed here:
-
-| Non-standard type | Underlying type | Purpose |
-| ----------------- | --------------- | ------- |
-| `userid_t` | `str` | Unique identity of a user. |
-| `projectid_t` | `str` | Unique identity of a project. |
-| `hwsetname_t` | `str` | Unique name of a hardware set. |
-
 ## Documents in `Users` Collection
 
 ```json
 {
-    "name": str,
-    "userid": userid_t,
-    "password": str,
-    "projects": [projectid_t],
+    "$jsonSchema": {
+        "required": ["username", "userid", "password", "projects"],
+        "properties": {
+            "username": {
+                "bsonType": "string"
+            },
+            "userid": {
+                "bsonType": "string"
+            },
+            "password": {
+                "bsonType": "string"
+            },
+            "projects": {
+                "bsonType": "array",
+                "uniqueItems": true,
+                "items": {
+                    "bsonType": "string"
+                },
+                "description": "List of project ids."
+            }
+        }
+    }
 }
 ```
 
@@ -35,15 +45,42 @@ Non-standard types used in the schemas for semantic purposes. They are listed he
 
 ```json
 {
-    "projectid": projectid_t,
-    "name": str,
-    "description": str,
-    "admin": userid_t,
-    "users": [userid_t],
-    "hwsets": [{
-        "name": hwsetname_t,
-        "checkedOut": int,
-    }],
+    "$jsonSchema": {
+        "required": ["projectid", "name", "description", "admin", "users", "hwsets"],
+        "properties": {
+            "projectid": {
+                "bsonType": "string"
+            },
+            "name": {
+                "bsonType": "string"
+            },
+            "description": {
+                "bsonType": "string"
+            },
+            "admin": {
+                "bsonType": "string",
+                "description": "User id."
+            },
+            "users": {
+                "bsonType": "array",
+                "uniqueItems": true,
+                "items": {
+                    "bsonType": "string"
+                },
+                "description": "List of user ids."
+            },
+            "hwsets": {
+                "bsonType": "object",
+                "patternProperties": {
+                    ".*": {
+                        "bsonType": "int",
+                        "minimum": 1
+                    }
+                },
+                "description": "Map of hardware sets to the amount the project checked out."
+            }
+        }
+    }
 }
 ```
 
@@ -51,12 +88,31 @@ Non-standard types used in the schemas for semantic purposes. They are listed he
 
 ```json
 {
-    "name": hwsetname_t,
-    "capacity": int,
-    "availability": int,
-    "projects": [{
-        "projectid": projectid_t,
-        "checkedOut": int,
-    }],
+    "$jsonSchema": {
+        "required": ["name", "userid", "password", "projects"],
+        "properties": {
+            "name": {
+                "bsonType": "string"
+            },
+            "capacity": {
+                "bsonType": "int",
+                "minimum": 0
+            },
+            "availability": {
+                "bsonType": "int",
+                "minimum": 0
+            },
+            "projects": {
+                "bsonType": "object",
+                "patternProperties": {
+                    ".*": {
+                        "bsonType": "int",
+                        "minimum": 1
+                    }
+                },
+                "description": "Map of project ids to the amount they checked out."
+            }
+        }
+    }
 }
 ```
