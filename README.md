@@ -23,6 +23,9 @@ Also, you will need to create a `.env` file that looks like the following with a
 MONGODB_USERNAME=<username>
 MONGODB_PASSWORD=<password>
 MONGODB_CLUSTER_ADDRESS=<cluster-address>
+
+# Flask secret key
+FLASK_SECRET_KEY=<some-generated-key>
 ```
 
 After preparing the requirements, make sure you activate the virtual environment. Then, you can run the back-end Flask app:
