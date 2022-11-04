@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 
 const Create = () => {
     const [title, setTitle] = useState();
+    const [id, setID] = useState();
     const [description, setDescription] = useState();
     const [hwset1, setHwSet1] = useState(0);
     const [hwset2, setHwSet2] = useState(0);
@@ -33,6 +34,13 @@ const Create = () => {
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                />
+                <label>Project ID:</label>
+                <input 
+                    type="text"
+                    required
+                    value={id}
+                    onChange={(e) => setID(e.target.value)}
                 />
                 <label>Project Description:</label>
                 <textarea
