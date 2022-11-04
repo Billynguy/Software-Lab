@@ -491,7 +491,6 @@ def project_get_resources(projectid: str):
                 resource_info['checkedOut'] = 0
                 resource_info['unused'] = True
 
-            resources.append(resource_info)
         else:
             resource_info['noSuchObject'] = True
 
