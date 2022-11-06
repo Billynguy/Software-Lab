@@ -34,6 +34,7 @@ Unless otherwise specified, the json objects returned by these routes are of the
 | `/api/open-project` | `GET` | FormData containing `projectid`; `session` user should be authorized | On success, returns no data. |
 | `/api/create-project` | `POST` | FormData containing `projectid`, `name`, and `description`; `session` should be set | On success, data contains `projectid`. |
 | `/api/project/<string:projectid>/authorize-user` | `POST` | `projectid` in route should exist; `session` user should be project's admin; FormData containing `userid` | On success, returns no data. |
+| `/api/project/<string:projectid>/authorize-user-multiple` | `POST` | `projectid` in route should exist; `session` user should be project's admin; FormData containing `userids`, an array of user ids | On success, returns no data. |
 | `/api/project/<string:projectid>/revoke-user` | `POST` | `projectid` in route should exist; `session` user should be project's admin; FormData containing `userid` | On success, returns no data. |
 | `/api/project/<string:projectid>/project-info` | `GET` | `projectid` in route should exist; `session` user should be authorized | On success, data contains `name`, `projectid`, and `description`. |
 | `/api/project/<string:projectid>/user-list` | `GET` | `projectid` in route should exist; `session` user should be authorized | On success, data contains `users`, an array of user ids. |
