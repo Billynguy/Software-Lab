@@ -21,18 +21,18 @@ Unless otherwise specified, the json objects returned by these routes are of the
 
 | Rule | Method | Inputs | Description |
 | ---- | ------ | ------ | ----------- |
-| `/api/sign-in/` | `POST` | FormData containing `userid` and `password` | On success, data contains `userid` and sets `session`. |
-| `/api/sign-up/` | `POST` | FormData containing `userid` and `password` | On success, data contains `userid` and sets `session`. |
-| `/api/sign-out/` | `GET` | Route should be directly accessed, not `fetch`'d | On success, returns nothing and clears `session`. |
-| `/api/user/<string:userid>/user-info/` | `GET` | `userid` in route should match `session` | On success, data contains `username` and `userid`. |
-| `/api/user/<string:userid>/project-list/` | `GET` | `userid` in route should match `session` | On success, data contains `projects`, an array of project ids. |
+| `/api/sign-in` | `POST` | FormData containing `userid` and `password` | On success, data contains `userid` and sets `session`. |
+| `/api/sign-up` | `POST` | FormData containing `userid` and `password` | On success, data contains `userid` and sets `session`. |
+| `/api/sign-out` | `GET` | Route should be directly accessed, not `fetch`'d | On success, returns nothing and clears `session`. |
+| `/api/user/<string:userid>/user-info` | `GET` | `userid` in route should match `session` | On success, data contains `username` and `userid`. |
+| `/api/user/<string:userid>/project-list` | `GET` | `userid` in route should match `session` | On success, data contains `projects`, an array of project ids. |
 
 ## Project Routes
 
 | Rule | Method | Inputs | Description |
 | ---- | ------ | ------ | ----------- |
-| `/api/open-project/` | `GET` | FormData containing `projectid`; `session` user should be authorized | On success, returns no data. |
-| `/api/create-project/` | `POST` | FormData containing `projectid`, `name`, and `description`; `session` should be set | On success, data contains `projectid`. |
+| `/api/open-project` | `GET` | FormData containing `projectid`; `session` user should be authorized | On success, returns no data. |
+| `/api/create-project` | `POST` | FormData containing `projectid`, `name`, and `description`; `session` should be set | On success, data contains `projectid`. |
 | `/api/project/<string:projectid>/authorize-user` | `POST` | `projectid` in route should exist; `session` user should be project's admin; FormData containing `userid` | On success, returns no data. |
 | `/api/project/<string:projectid>/revoke-user` | `POST` | `projectid` in route should exist; `session` user should be project's admin; FormData containing `userid` | On success, returns no data. |
 | `/api/project/<string:projectid>/project-info` | `GET` | `projectid` in route should exist; `session` user should be authorized | On success, data contains `name`, `projectid`, and `description`. |
