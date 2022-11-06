@@ -120,6 +120,58 @@ def project_authorize_user(projectid: str):
     }, 200)
 
 
+@project_bp.post('/project/<string:projectid>/authorize-user-multiple')
+def project_authorize_user(projectid: str):
+    """Receive an authorize user request for multiple users simultaneously.
+
+    Verify that this request comes from the admin and that the user exists.
+    :return: json response detailing success or failure of authorizing user access
+    """
+
+    project = Project.load_project(projectid)
+    if project is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Project does not exist.',
+            }
+        }, 404)
+
+    # Verify that this request comes from the admin
+    if project.get_admin() != session['userid']:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Authorize request not from admin.',
+            }
+        }, 403)
+
+    # Verify that the users exist
+    userids = request.form['userids'].split(',')
+    for userid in userids:
+        user = User.load_user(userid)
+        if user is None:
+            return make_response({
+                'status': {
+                    'success': False,
+                    'reason': 'Some user does not exist.',
+                }
+            }, 404)
+
+
+    # Note: Calls user.add_project()
+    for userid in userids:
+        user = User.load_user(userid)
+        project.add_user(user.get_userid())
+
+
+    return make_response({
+        'status': {
+            'success': True,
+        }
+    }, 200)
+
+
 @project_bp.post('/project/<string:projectid>/revoke-user')
 def project_revoke_user(projectid: str):
     """Receive a revoke user request.
