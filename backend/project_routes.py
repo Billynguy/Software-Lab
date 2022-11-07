@@ -121,7 +121,7 @@ def project_authorize_user(projectid: str):
 
 
 @project_bp.post('/project/<string:projectid>/authorize-user-multiple')
-def project_authorize_user(projectid: str):
+def project_authorize_user_multiple(projectid: str):
     """Receive an authorize user request for multiple users simultaneously.
 
     Verify that this request comes from the admin and that the user exists.
