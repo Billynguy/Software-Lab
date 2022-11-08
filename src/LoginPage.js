@@ -41,7 +41,8 @@ const LoginPage = () => {
 
   return (
     <div className="LoginPage">
-      <h1>Login Page:</h1>
+      <h1>Welcome to Los Pollos Hermanos:</h1>
+      <h2>Existing User? </h2>
       {renderLoginBox()}
       <div></div>
       <h2>New User? </h2>
