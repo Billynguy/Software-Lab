@@ -28,6 +28,7 @@ Unless otherwise specified, the json objects returned by these routes are of the
 | `/api/user/<string:userid>/project-list` | `GET` | `userid` in route should match `session` | On success, data contains `projects`, an array of project ids. |
 | `/api/user/session-user-info` | `GET` | `session` contains `userid` | On success, data contains `username` and `userid`. |
 | `/api/user/session-project-list` | `GET` | `session` contains `userid` | On success, data contains `projects`, an array of project ids. |
+| `/api/check-signed-in` | `GET` | `session` optionally contains `userid` | Returns nothing if signed in or a redirect into the login page if not signed in. |
 
 ## Project Routes
 

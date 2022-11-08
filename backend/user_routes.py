@@ -1,3 +1,5 @@
+import functools
+
 from flask import Blueprint, make_response, session, redirect, request
 from user import User
 
@@ -7,6 +9,17 @@ user_bp = Blueprint('user', __name__)
 
 """User operations.
 """
+
+
+@user_bp.get('/check-signed-in')
+def require_signed_in():
+    """Check that the user is signed in.
+
+    :return: redirect to login page if not signed in or nothing if signed in"""
+    if session.get('userid', None) is None:
+        return redirect('/')
+
+    return ''
 
 
 @user_bp.post('/sign-in')
@@ -67,7 +80,6 @@ def user_sign_up():
             }
         }, 405)
 
-    # TODO: Encrypt password
     # Note: Inserts new document into database
     User.new_user(request.form['username'], request.form['userid'], request.form['password'])
 
@@ -92,7 +104,7 @@ def user_sign_out():
     """
 
     session.clear()
-    return redirect('/login')
+    return redirect('/')
 
 
 """User information.
@@ -109,7 +121,7 @@ def user_get_user_info(userid: str):
     """
 
     # Verify that the session user has permission (session user must be the same user)
-    if session['userid'] != userid:
+    if session.get('userid', None) != userid:
         return make_response({
             'status': {
                 'success': False,
@@ -147,7 +159,7 @@ def user_get_projects(userid: str):
     """
 
     # Verify that the session user has permission (session user must be the same user)
-    if session['userid'] != userid:
+    if session.get('userid', None) != userid:
         return make_response({
             'status': {
                 'success': False,
@@ -182,6 +194,14 @@ def user_get_session_user_info():
     :return: json response with data containing username and userid or 404 error
     """
 
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get user information.',
+            }
+        }, 404)
+
     user = User.load_user(session['userid'])
     if user is None:
         return make_response({
@@ -209,6 +229,14 @@ def user_get_session_projects():
     We make all types of errors look identical to make it harder to reverse engineer.
     :return: json response with data containing projectid or 404 error
     """
+
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get user information.',
+            }
+        }, 404)
 
     user = User.load_user(session['userid'])
     if user is None:
