@@ -25,7 +25,7 @@ function App() {
         <div className="content"></div>
         <Switch>
           <Route exact path="/">
-            <Resources />
+            <Home />
           </Route>
           <Route path="/create">
             <Create />
