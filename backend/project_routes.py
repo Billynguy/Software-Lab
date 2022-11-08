@@ -30,6 +30,14 @@ def project_open_project():
             },
         }, 404)
 
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Could not open project.',
+            }
+        }, 404)
+
     if not project.has_user(session['userid']):
         return make_response({
             'status': {
@@ -53,6 +61,14 @@ def project_create_project():
     In this implementation, the front-end has to handle redirection by using, for example: `window.location = ...`.
     :return: json response for front-end to handle
     """
+
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Could not create project.',
+            }
+        }, 405)
 
     # Verify that the project information is valid.
     project = Project.new_project(request.form['projectid'], request.form['name'], request.form['description'], session['userid'])
@@ -92,6 +108,14 @@ def project_authorize_user(projectid: str):
         }, 404)
 
     # Verify that this request comes from the admin
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'User not signed in.',
+            }
+        }, 401)
+
     if project.get_admin() != session['userid']:
         return make_response({
             'status': {
@@ -138,6 +162,14 @@ def project_authorize_user_multiple(projectid: str):
         }, 404)
 
     # Verify that this request comes from the admin
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'User not signed in.',
+            }
+        }, 401)
+
     if project.get_admin() != session['userid']:
         return make_response({
             'status': {
@@ -190,6 +222,14 @@ def project_revoke_user(projectid: str):
         }, 404)
 
     # Verify that this request comes from the admin
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'User not signed in.',
+            }
+        }, 401)
+
     if project.get_admin() != session['userid']:
         return make_response({
             'status': {
@@ -235,6 +275,14 @@ def project_update_resources(projectid: str):
         }, 404)
 
     # Verify that this request comes from an authorized user
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'User not signed in.',
+            }
+        }, 401)
+
     if not project.has_user(session['userid']):
         return make_response({
             'status': {
@@ -294,6 +342,14 @@ def project_add_resource(projectid: str):
         }, 404)
 
     # Verify that this request comes from an authorized user
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'User not signed in.',
+            }
+        }, 401)
+
     if not project.has_user(session['userid']):
         return make_response({
             'status': {
@@ -338,6 +394,14 @@ def project_remove_resource(projectid: str):
         }, 404)
 
     # Verify that this request comes from an authorized user
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'User not signed in.',
+            }
+        }, 401)
+
     if not project.has_user(session['userid']):
         return make_response({
             'status': {
@@ -405,6 +469,14 @@ def project_get_project_info(projectid: str):
         }, 404)
 
     # Verify that the session user has permission (session user must be the same user)
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get project information.',
+            }
+        }, 404)
+
     if not project.has_user(session['userid']):
         return make_response({
             'status': {
@@ -444,6 +516,14 @@ def project_get_users(projectid: str):
         }, 404)
 
     # Verify that the session user has permission (session user must be the same user)
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get project information.',
+            }
+        }, 404)
+
     if not project.has_user(session['userid']):
         return make_response({
             'status': {
@@ -481,6 +561,14 @@ def project_is_admin(projectid: str):
         }, 403)
 
     # Verify that the session user is admin
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'User is not admin of project.',
+            }
+        }, 403)
+
     if project.get_admin() != session['userid']:
         return make_response({
             'status': {
@@ -518,6 +606,14 @@ def project_get_resources(projectid: str):
         }, 404)
 
     # Verify that the session user has permission (session user must be the same user)
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get project information',
+            }
+        }, 404)
+
     if not project.has_user(session['userid']):
         return make_response({
             'status': {
