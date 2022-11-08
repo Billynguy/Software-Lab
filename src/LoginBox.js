@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react"; 
 import {useHistory} from "react-router-dom";
-import './LoginPage.css';
+import './LoginBox.css';
 
 
 const LoginBox = (props) => {
@@ -21,18 +21,13 @@ const LoginBox = (props) => {
       if(success){
         history.push("/home");
       }
-      else if(props.submitText === "Log In!"){
-        setPopupText("Unsuccessful Login");
-        history.push("/");
-      }
       else{
-        setPopupText("Unsuccessful Creation");
+        setPopupText("Unsuccessful Login");
         history.push("/");
       }
     }
   
     const handleSubmit = () => {
-      if(props.submitText === "Log In!"){
         props.onLogin();
         //console.log("Logging in user "+userID+" with password "+password+" ...")
         //setPopupText("Logging in user "+userID+" with password "+password+" ...")
@@ -55,37 +50,13 @@ const LoginBox = (props) => {
         form.append('userid', encrypt(userID));
         form.append('password', encrypt(password));
         fetch("/api/sign-in", {method: "POST", body: form}).then(response => response.json()).then(
-          data => {
+            data => {
             setPopupText(data.status.reason)
             setDisplayPopup(true)
             setSuccess(data.status.success)
             handleLogin()
-          }
+            }
         )
-      }
-      else{
-        props.onCreateAcc()
-        //console.log("Creating user "+userID+" with password "+password+" ...")
-        //setPopupText("Creating user "+userID+" with password "+password+" ...")
-        setPopupText("Creating user ...");
-        setDisplayPopup(true);
-        if(userID === "" || password === ""){
-          // TODO: Handle error
-          
-        }
-        handleLogin()
-        const form = new FormData();
-        form.append('userid', encrypt(userID));
-        form.append('password', encrypt(password));
-        fetch("/api/sign-up", {method: "POST", body: form}).then(response => response.json()).then(
-          data => {
-            setPopupText(data.status.reason)
-            setDisplayPopup(true)
-            setSuccess(data.status.success)
-            handleLogin()
-          }
-        )
-      }
     }
   
     const changeUserIDInput = (e) => {
@@ -97,28 +68,26 @@ const LoginBox = (props) => {
     }
   
     const renderUserIDTextBox = () => {
-      // TODO: Ensure that there is text in the box
       return (
         <div>
           <p>UserID:</p>
-          <input className="userIDTextBox" type="text" value={userID} onChange={changeUserIDInput}></input>
+          <input className="userIDTextBox_Login" type="text" value={userID} onChange={changeUserIDInput}></input>
         </div>
       );
     }
   
     const renderPasswordTextBox = () => {
-      // TODO: Ensure that there is text in the box
       return (
         <div>
           <p>Password:</p>
-          <input className="passwordTextBox" type="password" value={password} onChange={changePasswordInput}></input>
+          <input className="passwordTextBox_Login" type="password" value={password} onChange={changePasswordInput}></input>
         </div>
       );
     }
     
     const renderSubmitButton = () => {
       return (
-        <button className="submitButton" onClick={handleSubmit}>
+        <button className="submitButton_Login" onClick={handleSubmit}>
           {props.submitText}
         </button>
       );

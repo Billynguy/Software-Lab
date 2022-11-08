@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import {useHistory} from "react-router-dom";
 import './LoginPage.css';
 import LoginBox from './LoginBox';
-//import NewUserBox from './NewUserBox';
+import NewUserBox from './NewUserBox';
 
 
 const LoginPage = () => {
@@ -32,7 +32,7 @@ const LoginPage = () => {
 
   const renderNewUserBox = () => {
     return (
-      <LoginBox
+      <NewUserBox
         submitText={"Create Account!"}
         onCreateAcc={handleCreateNewAccount}
       />

@@ -1,0 +1,63 @@
+.usernameTextBox_NewUser{
+    position: absolute;
+    left: auto;
+    float: left;
+    width: 200px;
+    height: 25px;
+    left: 100px;
+    top: 30px;
+}
+
+.userIDTextBox_NewUser{
+    position: absolute;
+    left: auto;
+    float: left;
+    width: 200px;
+    height: 25px;
+    left: 100px;
+    top: 65px;
+  }
+  
+  .passwordTextBox_NewUser{
+    position: absolute;
+    left: auto;
+    float: left;
+    width: 200px;
+    height: 25px;
+    left: 100px;
+    top: 100px;
+  }
+  
+  .submitButton_NewUser{
+    position: absolute;
+    left: auto;
+    float: left;
+    width: 120px;
+    height: 30px;
+    left: 200px;
+    top: 155px;
+    background-color: orange;
+  }
+  
+  .NewUserBox{
+    background-color: lightgray;
+    margin: 5px;
+    width: 320px;
+    height: 175px;
+    padding: 20px;
+    border: 3px solid black;
+    border-radius: 15px;
+    position: relative;
+    /* float: left; */
+  }
+  
+  h5{
+    position: absolute;
+    left: auto;
+    float: left;
+    width: 120px;
+    height: 30px;
+    left: 40px;
+    top: 110px;
+    color: red;
+  }
