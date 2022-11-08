@@ -32,13 +32,13 @@ const NewUserBox = (props) => {
         props.onCreateAcc()
         //console.log("Creating user "+userID+" with password "+password+" ...")
         //setPopupText("Creating user "+userID+" with password "+password+" ...")
-        if(userID === "" || password === ""){
-            setPopupText("Please enter valid userID and password");
+        if(userID === "" || password === "" || username === ""){
+            setPopupText("Please enter valid username, userID, and password");
             setDisplayPopup(true);
             return;
         }
-        else if(!userID.match(/^[0-9a-zA-Z]+$/) || !password.match(/^[0-9a-zA-Z]+$/)){
-            setPopupText("Please enter valid alphanumeric userID and password");
+        else if(!userID.match(/^[0-9a-zA-Z]+$/) || !password.match(/^[0-9a-zA-Z]+$/) || !username.match(/^[0-9a-zA-Z]+$/)){
+            setPopupText("Please enter valid alphanumeric username, userID, and password");
             setDisplayPopup(true);
             return;
         }
