@@ -172,3 +172,58 @@ def user_get_projects(userid: str):
             'projects': user.get_projects()
         }
     }, 200)
+
+
+@user_bp.get('/user/session-user-info')
+def user_get_session_user_info():
+    """Get the session user's username and userid.
+
+    We make all types of errors look identical to make it harder to reverse engineer.
+    :return: json response with data containing username and userid or 404 error
+    """
+
+    user = User.load_user(session['userid'])
+    if user is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get user information.',
+            }
+        }, 404)
+
+    return make_response({
+        'status': {
+            'success': True,
+        },
+        'data': {
+            'username': user.get_username(),
+            'userid': user.get_userid(),
+        }
+    }, 200)
+
+
+@user_bp.get('/user/session-project-list')
+def user_get_session_projects():
+    """Get the session user's list of projects.
+
+    We make all types of errors look identical to make it harder to reverse engineer.
+    :return: json response with data containing projectid or 404 error
+    """
+
+    user = User.load_user(session['userid'])
+    if user is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Unable to get user information.',
+            }
+        }, 404)
+
+    return make_response({
+        'status': {
+            'success': True,
+        },
+        'data': {
+            'projects': user.get_projects()
+        }
+    }, 200)
