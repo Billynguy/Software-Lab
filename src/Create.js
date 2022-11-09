@@ -30,28 +30,35 @@ const Create = () => {
         fetch('/api/create-project',{
             method: 'POST',
             body: project
-        }).then((response) => {
-            var parsedUsers = users.split(', ')
+        }).then(response => response.json()).then(
+            json => {
+                setPopupTextExistingProject(json.status.reason)
+                setDisplayPopupExistingProject(true)
+
+                var parsedUsers = users.split(', ')
             
-            const userids = []
-            for(let i = 0; i < parsedUsers.length; i++){
-                userids.push(parsedUsers[i]);
-            }
-            const usersForm = new FormData();
-            usersForm.set('userids', userids);
-            fetch(`/api/project/${id}/authorize-user-multiple`, {
-                method: 'POST',
-                body: usersForm,
-            }).then(res => res.json()).then(data => {
-                if (!data.status.success){
-                    setPopupTextAddUser(data.status.reason)
-                    setDisplayPopupAddUser(true)
+                const userids = []
+                for(let i = 0; i < parsedUsers.length; i++){
+                    userids.push(parsedUsers[i]);
                 }
+                const usersForm = new FormData();
+                usersForm.set('userids', userids);
+                fetch(`/api/project/${id}/authorize-user-multiple`, {
+                    method: 'POST',
+                    body: usersForm,
+                }).then(res => res.json()).then(data => {
+                    if (!data.status.success){
+                        setPopupTextAddUser(data.status.reason)
+                        setDisplayPopupAddUser(true)
+                    }
                 
             });
             
             //history.push('/home');
-        });
+            }
+        )
+            
+        //});
 
         
 
@@ -91,6 +98,7 @@ const Create = () => {
                 />
                 <button>Add Project</button>
             </form>
+            {displayPopupExistingProject && <h3>{popupTextExistingProject}</h3>}
             {displayPopupAddUser && <h3>{popupTextAddUser}</h3>}
         </div>
     );
