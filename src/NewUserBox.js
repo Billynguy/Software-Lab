@@ -35,7 +35,7 @@ const NewUserBox = (props) => {
             setDisplayPopup(true);
             return;
         }
-        else if(!userID.match(/^[0-9a-zA-Z]+$/) || !password.match(/^[0-9a-zA-Z]+$/) || !username.match(/^[0-9a-zA-Z]+$/)){
+        else if(!userID.match(/^[0-9a-zA-Z]+$/) || !password.match(/^[0-9a-zA-Z]+$/) || !username.match(/^[0-9a-zA-Z ]+$/)){
             setPopupText("Please enter valid alphanumeric username, userID, and password");
             setDisplayPopup(true);
             return;
