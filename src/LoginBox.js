@@ -95,7 +95,7 @@ const LoginBox = (props) => {
         {renderUserIDTextBox()}
         {renderPasswordTextBox()}
         {renderSubmitButton()}
-        {displayPopup && <h5>{popupText}</h5>}
+        {displayPopup && <h5 className="popup_Login">{popupText}</h5>}
       </div>
     );
   }
