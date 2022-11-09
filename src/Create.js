@@ -36,6 +36,9 @@ const Create = () => {
                   setPopupTextExistingProject(json.status.reason)
                   setDisplayPopupExistingProject(true)  
                 }
+                else{
+                    setDisplayPopupExistingProject(false)  
+                }
                 
 
                 var parsedUsers = users.split(', ')
@@ -99,7 +102,6 @@ const Create = () => {
                 <label>Add users:</label>
                 <input 
                     type="text"
-                    required
                     value={users}
                     onChange={(e) => setUsers(e.target.value)}
                 />
