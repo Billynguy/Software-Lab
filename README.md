@@ -1,12 +1,35 @@
-# ee461-frontend-in-react
-This is a minimal repo containing example code for my lecture given in the Fall 2022 semester of UT Austin EE461L, Software Engineering & Design. 
+# Software-Lab
 
-This code demonstrates a basic user login flow implemented in React. A PDF of my lecture slides is also included in this repo for your convenience.
+ECE461L Software Lab Group consisting of Daniel Xie, Gaurav Belani, Billy Nguyen, Kerry Tu, and Bobby Chiu. Group name is Los Pollos Hermanos.
 
-## Getting Started
+## Running the Development Server
+
+### React Front-end
 0. You must have [Node.js](https://nodejs.org/en/) installed.
 1. Clone this repo with ``git clone https://github.com/evmaki/ee461-frontend-in-react.git``
 2. ``cd`` into ``ee461-frontend-in-react``
 3. Run ``npm install`` to install the project's dependencies (i.e. React and all the JS libraries it depends on).
 4. Once the dependencies are downloaded, run ``npm start`` to start the development server.
 5. You can access the interface while you're working on it at http://localhost:3000 in your web browser.
+
+### Flask Back-end
+
+Make sure you have Python 3 installed.
+
+After cloning this repo, you will need to set up a virtual environment and install the required Python packages for the back-end:
+
+```sh
+cd backend
+py -3 -m venv venv # For Windows, or `python3 -m venv venv` on non-Windows systems
+venv/Scripts/activate # For Windows, or `source venv/bin/activate` on non-Windows systems
+pip install -r requirements.txt
+```
+
+Also, you will need to create a `.env` file. You can either run `py -3 env-setup.py` (for Windows, or `python3 env-setup.py` on non-Windows systems) or manually create a `.env` file that looks like the `.env.template` file with appropriate substitution.
+
+After preparing the requirements, make sure you activate the virtual environment. Then, you can run the back-end Flask app:
+
+```sh
+venv/Scripts/activate # For Windows, or `source venv/bin/activate` on non-Windows systems
+flask run # Or `flask --debug run`
+```
