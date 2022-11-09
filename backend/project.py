@@ -18,7 +18,9 @@ class Project:
         self.__description: str = ''
         self.__admin: str = ''
         self.__users: list[str] = []
-        self.__hwsets: dict[str, int] = {}
+        self.__hwsets: dict[str, int] = {"HWSet1": 0, "HWSet2": 0}
+        # shoddy initliazation for now just to push something
+        # will get hwsets from database and set them all to 0 incase there is more than 2 or less than 2 or different names!
         """This is a dict of hwsets"""
 
     @staticmethod
@@ -216,7 +218,7 @@ class Project:
             else:
                 new_rented = rented - qty
                 if new_rented == 0:
-                    self.__hwsets.pop(hwset)
+                    self.__hwsets[hwset] = 0
                 else:
                     self.__hwsets[hwset] = new_rented
 
