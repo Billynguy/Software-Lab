@@ -58,12 +58,3 @@ Unless otherwise specified, the json objects returned by these routes are of the
 | ---- | ------ | ------ | ----------- |
 | `/api/resource/<string:hwset_name>/resource-info` | `GET` | `hwset_name` in route should exist | On success, data contains `name`, `capacity`, and `availability`. |
 | `/api/resource/resource-info` | `GET` | None | On success, data contains `resources`, an array containing objects. These objects contain `name`, `capacity`, and `availability`. |
-
-## Test Routes
-
-| Rule | Method | Inputs | Description |
-| ---- | ------ | ------ | ----------- |
-| `/` | `GET` | None | On success, returns the string "Hello, World!". |
-| `/api/get-test` | `GET` | None | On success, returns `{"string": "This is a string from the api.}`. |
-| `/api/post-test` | `GET` | None | On success, returns an HTML form. |
-| `/api/post-test` | `POST` | Optional FormData containing `string` | On success, returns either `{"response": "No string was sent."}` or `{"response": "This is your string: \"<string>\""}` where `<string>` is from FormData. |
