@@ -19,15 +19,15 @@ import useFetch from './useFetch';
     const [checkInVal2, setCheckInVal2] = useState(0);
     const [checkOutVal2, setCheckOutVal2] = useState(0);
     const [rowId, setRowId] = useState(null);
-    const [projectItems, setProjectItems] = useState([]);
+    const [projectResources, setProjectResources] = useState([]);
     const [resourcePool, setResourcePool] = useState([]);
 
     useEffect(
       () => {
-        fetch(`/api/project/${id}/project-info`, {
+        fetch(`/api/project/${id}/resources`, {
           method: 'GET'
         }).then(res => res.json()).then(json => {
-          setProjectItems(json.data);
+          setProjectResources(json.data);
         });
 
       }
@@ -49,76 +49,6 @@ import useFetch from './useFetch';
       setCheckOutVal2(e.target.value)
     }
 
-    //Buttons and Text Fields
-/*
-    const checkInButton1 = () => {
-      return (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={(event) => {
-            handleCheckIn(event);
-          }}
-        >
-          Check In
-        </Button>
-      );
-    }
-
-    const checkInButton2 = () => {
-      return (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={(event) => {
-            handleCheckIn(event);
-          }}
-        >
-          Check In
-        </Button>
-      );
-    }
-
-    const checkOutButton1 = () => {
-      return (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={(event) => {
-            handleCheckIn(event);
-          }}
-        >
-          Check Out
-        </Button>
-      );
-    }
-
-    const checkOutButton2 = () => {
-      return (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={(event) => {
-            handleCheckIn(event);
-          }}
-        >
-          Check Out
-        </Button>
-      );
-    }
-
-    const checkInField1 = () => {
-      return (
-        <TextField label="Check In" id="checkIn1" onChange={changeCheckIn1}></TextField>
-      )
-    }
-
-    const checkInField2 = () => {
-      return (
-        <TextField label="Check In" id="checkIn2" onChange={changeCheckIn2}></TextField>
-      )
-    }
-*/
     const handleCheckIn = (event, cellValues) => {
       if(cellValues.row.id == 1){
         console.log(cellValues.row.id)
@@ -152,7 +82,7 @@ import useFetch from './useFetch';
         else{
           alert("You're checking out too much!");
         }
-        console.log(projectItems);
+        console.log(projectResources);
       }
       else{
         console.log(cellValues.row.id)
