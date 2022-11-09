@@ -10,6 +10,11 @@ const ProjectDetails = () => {
     const [users, setUsers] = useState();
     
     const [resourceItems, setResourceItems] = useState([]);
+
+    const [displayPopupAddUser, setDisplayPopupAddUser] = useState(false);
+    const [popupTextAddUser, setPopupTextAddUser] = useState("");
+
+
     //const [hwItem2, setHwItem2] = useState([]);
     useEffect(
         () => {
@@ -40,7 +45,13 @@ const ProjectDetails = () => {
         fetch(`/api/project/${id}/authorize-user-multiple`, {
             method: 'POST',
             body: usersForm,
-        }).then(res => res.json()).then(data => console.log(data));
+        }).then(res => res.json()).then(data => {
+            if (!data.status.success){
+                setPopupTextAddUser(data.status.reason)
+                setDisplayPopupAddUser(true)
+            }
+            
+        });
     }
 
     return ( 
@@ -72,9 +83,9 @@ const ProjectDetails = () => {
 
                     </form>
                 </article>
-
-
+                
             )}
+            {displayPopupAddUser && <h3>{popupTextAddUser}</h3>}
         </div>
      );
 }

@@ -9,6 +9,13 @@ const Create = () => {
     const [hwset1, setHwSet1] = useState(0);
     const [hwset2, setHwSet2] = useState(0);
     const history = useHistory();
+    // Error check for using a existing project id
+    const [displayPopupExistingProject, setDisplayPopupExistingProject] = useState(false);
+    const [popupTextExistingProject, setPopupTextExistingProject] = useState("");
+
+    // Display error message for adding user
+    const [displayPopupAddUser, setDisplayPopupAddUser] = useState(false);
+    const [popupTextAddUser, setPopupTextAddUser] = useState("");
     
 
     const handleSubmit = (e) => {
@@ -23,7 +30,7 @@ const Create = () => {
         fetch('/api/create-project',{
             method: 'POST',
             body: project
-        }).then(() => {
+        }).then((response) => {
             var parsedUsers = users.split(', ')
             
             const userids = []
@@ -35,9 +42,15 @@ const Create = () => {
             fetch(`/api/project/${id}/authorize-user-multiple`, {
                 method: 'POST',
                 body: usersForm,
-            }).then(res => res.json()).then(data => console.log(data));
+            }).then(res => res.json()).then(data => {
+                if (!data.status.success){
+                    setPopupTextAddUser(data.status.reason)
+                    setDisplayPopupAddUser(true)
+                }
+                
+            });
             
-            history.push('/home');
+            //history.push('/home');
         });
 
         
@@ -78,7 +91,7 @@ const Create = () => {
                 />
                 <button>Add Project</button>
             </form>
-
+            {displayPopupAddUser && <h3>{popupTextAddUser}</h3>}
         </div>
     );
 }
