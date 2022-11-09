@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react"; 
+import React, {useState} from "react"; 
 import {useHistory} from "react-router-dom";
 import './LoginBox.css';
 
@@ -27,7 +27,6 @@ const LoginBox = (props) => {
     }
   
     const handleSubmit = () => {
-        props.onLogin();
         //console.log("Logging in user "+userID+" with password "+password+" ...")
         //setPopupText("Logging in user "+userID+" with password "+password+" ...")
         if(userID === "" || password === ""){
