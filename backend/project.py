@@ -18,8 +18,9 @@ class Project:
         self.__description: str = ''
         self.__admin: str = ''
         self.__users: list[str] = []
-        self.__hwsets: dict[str, int] = {"HWSet1": 0, "HWSet2": 0}
-        # shoddy initliazation for now just to push something
+        self.__hwsets: dict[str, int] = {}
+        for hwset_doc in DBManager.get_instance().get_hwsets_collection().find():
+            self.__hwsets[hwset_doc['name']] = 0
         # will get hwsets from database and set them all to 0 incase there is more than 2 or less than 2 or different names!
         """This is a dict of hwsets"""
 
@@ -90,7 +91,14 @@ class Project:
         self.__description = project_dict['description']
         self.__admin = project_dict['admin']
         self.__users = project_dict['users']
-        self.__hwsets = project_dict['hwsets']
+        self.__hwsets = {}
+        project_hwsets = project_dict['hwsets']
+        for hwset_doc in DBManager.get_instance().get_hwsets_collection().find():
+            hwset_name = hwset_doc['name']
+            if hwset_name in project_hwsets:
+                self.__hwsets[hwset_name] = project_hwsets[hwset_name]
+            else:
+                self.__hwsets[hwset_name] = 0
 
     def get_projectid(self) -> str:
         """Return the projectid of this project.
