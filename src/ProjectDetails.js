@@ -58,8 +58,13 @@ const ProjectDetails = () => {
         }).then(res => res.json()).then(data => {
             if (!data.status.success){
                 setPopupTextAddUser(data.status.reason)
-                setDisplayPopupAddUser(true)
+                //setDisplayPopupAddUser(true)
             }
+            else{
+                setPopupTextAddUser("User(s) successfully added.")
+                //setDisplayPopupAddUser(true)
+            }
+            setDisplayPopupAddUser(true)
             
         });
     }
