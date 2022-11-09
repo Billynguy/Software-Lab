@@ -32,8 +32,11 @@ const Create = () => {
             body: project
         }).then(response => response.json()).then(
             json => {
-                setPopupTextExistingProject(json.status.reason)
-                setDisplayPopupExistingProject(true)
+                if(!json.status.success){
+                  setPopupTextExistingProject(json.status.reason)
+                  setDisplayPopupExistingProject(true)  
+                }
+                
 
                 var parsedUsers = users.split(', ')
             
@@ -51,10 +54,14 @@ const Create = () => {
                         setPopupTextAddUser(data.status.reason)
                         setDisplayPopupAddUser(true)
                     }
-                
+                    else{
+                        setDisplayPopupAddUser(false)
+                    }
+                if (json.status.success){
+                    history.push('/home');  
+                }
             });
             
-            //history.push('/home');
             }
         )
             

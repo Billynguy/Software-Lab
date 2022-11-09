@@ -8,7 +8,7 @@ const ProjectDetails = () => {
     const [curUserID, setCurUserID] = useState();
     //const { data: project, error, isPending} = useFetch('http://localhost:8000/projects/' + id);
     const [users, setUsers] = useState();
-    
+    const [projectItems, setProjectItems] = useState([]);
     const [resourceItems, setResourceItems] = useState([]);
 
     const [displayPopupAddUser, setDisplayPopupAddUser] = useState(false);
@@ -18,7 +18,13 @@ const ProjectDetails = () => {
     //const [hwItem2, setHwItem2] = useState([]);
     useEffect(
         () => {
-            fetch(`/api/project/${id}/resources	`, {
+            fetch(`/api/project/${id}/project-info`, {
+                method: 'GET'
+            }).then(res => res.json()).then(json => {
+                setProjectItems(json.data);
+            });
+
+            fetch(`/api/project/${id}/resources`, {
                 method: 'GET'
             }).then(res => res.json()).then(json => {
                 setResourceItems(json.data.resources);
@@ -26,6 +32,10 @@ const ProjectDetails = () => {
             
         }, []
     );
+
+    // const projectItemsRender = projectItems.map((comps) => {
+    //     return (<li key={comps}>{`${comps.name } ID: ${comps.projectid} ${comps.description}`}</li>);
+    // })
 
     const resourceItemsRender = resourceItems.map((project) => {
         return (<li key={project}>{`${project.name} checked out units: ${project.checkedOut}`}</li>);
@@ -60,13 +70,13 @@ const ProjectDetails = () => {
             {error && <div>{error}</div>} */}
             {(
                 <article>
-
-                    
-                    {/* <h2>{project.title}</h2> */}
-                    
                     <div>
+                        <h1>{projectItems.name}</h1>
+                        <h4>Project ID: {projectItems.projectid}</h4>
+                        <h4>{projectItems.description}</h4>
+                        {/* {projectItemsRender} */}
                         {resourceItemsRender}
-
+                    
                         <Link to={`/resources`}>
                             <h2>Resource Page</h2>
                         </Link>
