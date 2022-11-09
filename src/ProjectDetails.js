@@ -56,7 +56,7 @@ const ProjectDetails = () => {
                     <div>
                         {resourceItemsRender}
 
-                        <Link to={`/resources`}>
+                        <Link to={`/projects/${id}/resources`}>
                             <h2>Resource Page</h2>
                         </Link>
                     </div>
