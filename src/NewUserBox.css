@@ -51,13 +51,13 @@
     /* float: left; */
   }
   
-  h5{
+  .popup_NewUser{
     position: absolute;
     left: auto;
     float: left;
     width: 150px;
     height: 30px;
     left: 30px;
-    top: 90px;
+    top: 130px;
     color: red;
   }

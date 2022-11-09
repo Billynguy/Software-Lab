@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react"; 
+import React, {useState} from "react"; 
 import {useHistory} from "react-router-dom";
 import './NewUserBox.css';
 
@@ -28,7 +28,6 @@ const NewUserBox = (props) => {
     }
   
     const handleSubmit = () => {
-        props.onCreateAcc()
         //console.log("Creating user "+userID+" with password "+password+" ...")
         //setPopupText("Creating user "+userID+" with password "+password+" ...")
         if(userID === "" || password === "" || username === ""){
@@ -111,7 +110,7 @@ const NewUserBox = (props) => {
         {renderUserIDTextBox()}
         {renderPasswordTextBox()}
         {renderSubmitButton()}
-        {displayPopup && <h5>{popupText}</h5>}
+        {displayPopup && <h5 className="popup_NewUser">{popupText}</h5>}
       </div>
     );
   }
