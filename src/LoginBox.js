@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react"; 
+import React, {useState} from "react"; 
 import {useHistory} from "react-router-dom";
 import './LoginBox.css';
 
@@ -6,7 +6,6 @@ import './LoginBox.css';
 const LoginBox = (props) => {
     const [userID, setUserID] = useState("");
     const [password, setPassword] = useState("");
-    const [success, setSuccess] = useState(true);
     const [displayPopup, setDisplayPopup] = useState(false);
     const [popupText, setPopupText] = useState("");
     const history = useHistory(); 
@@ -17,7 +16,7 @@ const LoginBox = (props) => {
       return encryptedText;
     }
   
-    const handleLogin = () => {
+    const handleLogin = (success) => {
       if(success){
         history.push("/home");
       }
@@ -28,7 +27,6 @@ const LoginBox = (props) => {
     }
   
     const handleSubmit = () => {
-        props.onLogin();
         //console.log("Logging in user "+userID+" with password "+password+" ...")
         //setPopupText("Logging in user "+userID+" with password "+password+" ...")
         if(userID === "" || password === ""){
@@ -45,16 +43,14 @@ const LoginBox = (props) => {
             setPopupText("Logging in ...");
             setDisplayPopup(true);
         }
-        handleLogin()
         const form = new FormData();
         form.append('userid', encrypt(userID));
         form.append('password', encrypt(password));
         fetch("/api/sign-in", {method: "POST", body: form}).then(response => response.json()).then(
-            data => {
-            setPopupText(data.status.reason)
+            json => {
+            setPopupText(json.status.reason)
             setDisplayPopup(true)
-            setSuccess(data.status.success)
-            handleLogin()
+            handleLogin(json.status.success)
             }
         )
     }
@@ -98,7 +94,7 @@ const LoginBox = (props) => {
         {renderUserIDTextBox()}
         {renderPasswordTextBox()}
         {renderSubmitButton()}
-        {displayPopup && <h5>{popupText}</h5>}
+        {displayPopup && <h5 className="popup_Login">{popupText}</h5>}
       </div>
     );
   }

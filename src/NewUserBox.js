@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react"; 
+import React, {useState} from "react"; 
 import {useHistory} from "react-router-dom";
 import './NewUserBox.css';
 
@@ -7,7 +7,6 @@ const NewUserBox = (props) => {
     const [username, setUsername] = useState("");
     const [userID, setUserID] = useState("");
     const [password, setPassword] = useState("");
-    const [success, setSuccess] = useState(true);
     const [displayPopup, setDisplayPopup] = useState(false);
     const [popupText, setPopupText] = useState("");
     const history = useHistory(); 
@@ -18,7 +17,7 @@ const NewUserBox = (props) => {
       return encryptedText;
     }
   
-    const handleLogin = () => {
+    const handleLogin = (success) => {
       if(success){
         history.push("/home");
       }
@@ -29,7 +28,6 @@ const NewUserBox = (props) => {
     }
   
     const handleSubmit = () => {
-        props.onCreateAcc()
         //console.log("Creating user "+userID+" with password "+password+" ...")
         //setPopupText("Creating user "+userID+" with password "+password+" ...")
         if(userID === "" || password === "" || username === ""){
@@ -46,17 +44,15 @@ const NewUserBox = (props) => {
             setPopupText("Creating User ...");
             setDisplayPopup(true);
         }
-        handleLogin()
         const form = new FormData();
         form.append('username', encrypt(username));
         form.append('userid', encrypt(userID));
         form.append('password', encrypt(password));
         fetch("/api/sign-up", {method: "POST", body: form}).then(response => response.json()).then(
-          data => {
-            setPopupText(data.status.reason)
+          json => {
+            setPopupText(json.status.reason)
             setDisplayPopup(true)
-            setSuccess(data.status.success)
-            handleLogin()
+            handleLogin(json.status.success)
           }
         )
     }
@@ -114,7 +110,7 @@ const NewUserBox = (props) => {
         {renderUserIDTextBox()}
         {renderPasswordTextBox()}
         {renderSubmitButton()}
-        {displayPopup && <h5>{popupText}</h5>}
+        {displayPopup && <h5 className="popup_NewUser">{popupText}</h5>}
       </div>
     );
   }

@@ -37,7 +37,7 @@ function App() {
           <Route exact path="/projects/:id">
             <ProjectDetails /> 
           </Route>
-          <Route path="/projects/:id/resources">
+          <Route path="/resources">
             <Resources /> 
           </Route>
         </Switch>
