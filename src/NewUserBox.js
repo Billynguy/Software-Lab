@@ -7,7 +7,6 @@ const NewUserBox = (props) => {
     const [username, setUsername] = useState("");
     const [userID, setUserID] = useState("");
     const [password, setPassword] = useState("");
-    const [success, setSuccess] = useState(true);
     const [displayPopup, setDisplayPopup] = useState(false);
     const [popupText, setPopupText] = useState("");
     const history = useHistory(); 
@@ -18,7 +17,7 @@ const NewUserBox = (props) => {
       return encryptedText;
     }
   
-    const handleLogin = () => {
+    const handleLogin = (success) => {
       if(success){
         history.push("/home");
       }
@@ -46,17 +45,15 @@ const NewUserBox = (props) => {
             setPopupText("Creating User ...");
             setDisplayPopup(true);
         }
-        handleLogin()
         const form = new FormData();
         form.append('username', encrypt(username));
         form.append('userid', encrypt(userID));
         form.append('password', encrypt(password));
         fetch("/api/sign-up", {method: "POST", body: form}).then(response => response.json()).then(
-          data => {
-            setPopupText(data.status.reason)
+          json => {
+            setPopupText(json.status.reason)
             setDisplayPopup(true)
-            setSuccess(data.status.success)
-            handleLogin()
+            handleLogin(json.status.success)
           }
         )
     }
