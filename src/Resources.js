@@ -246,7 +246,7 @@ import useFetch from './useFetch';
       if(cellValues.row.id == 1){
         console.log(cellValues.row.id)
         console.log(checkOutVal1);
-        if(cellValues.row.available >= checkOutVal1 || 1 == 1){
+        if(cellValues.row.available >= checkOutVal1){
           const checkOutForm = new FormData();
           checkOutForm.set('name', "HWSet1");
           checkOutForm.set('quantity', checkOutVal1);
