@@ -20,9 +20,7 @@ import useFetch from './useFetch';
     const [checkOutVal2, setCheckOutVal2] = useState(0);
     const [rowId, setRowId] = useState(null);
     const [projectResources, setProjectResources] = useState([]);
-    const [resourcePool, setResourcePool] = useState(
-      []
-    );
+    const [resourcePool, setResourcePool] = useState([]);
 
     useEffect(
       () => {
@@ -54,67 +52,6 @@ import useFetch from './useFetch';
     const changeCheckOut2 = (e) => {
       setCheckOutVal2(e.target.value)
     }
-
-    const handleCheckIn = (event, cellValues) => {
-      if(cellValues.row.id == 1){
-        console.log(cellValues.row.id);
-        console.log(checkInVal1);
-        if(cellValues.row.capacity - cellValues.row.available >= checkInVal1){
-          const checkInForm = new FormData();
-          checkInForm.set('name', "HWSet 1");
-          checkInForm.set('quantity', checkInVal1);
-          fetch()
-        }
-        else{
-          alert("You're checking in too much!");
-        }
-        console.log(resourcePool);
-      }
-      else{
-        console.log(cellValues.row.id)
-        console.log(checkInVal2);
-        if(cellValues.row.capacity - cellValues.row.available >= checkInVal2){
-          const checkInForm = new FormData();
-          checkInForm.set('name', "HWSet 2");
-          checkInForm.set('quantity', checkInVal2);
-          fetch()
-        }
-        else{
-          alert("You're checking in too much!");
-        }
-      }
-    };
-
-    const handleCheckOut = (event, cellValues) => {
-      if(cellValues.row.id == 1){
-        console.log(cellValues.row.id)
-        console.log(checkOutVal1);
-        if(cellValues.row.available >= checkOutVal1){
-          const checkOutForm = new FormData();
-          checkOutForm.set('name', "HWSet 1");
-          checkOutForm.set('quantity', checkOutVal1);
-        }
-        else{
-          alert("You're checking out too much!");
-        }
-        console.log(projectResources);
-      }
-      else{
-        console.log(cellValues.row.id)
-        console.log(checkOutVal2);
-        if(cellValues.row.available >= checkOutVal2){
-          const checkOutForm = new FormData();
-          checkOutForm.set('name', "HWSet 2");
-          checkOutForm.set('quantity', checkOutVal2);
-        }
-        else{
-          alert("You're checking out too much!");
-        }
-      }
-    }
-
-    
-
 
     //Columns and Rows
 
@@ -226,13 +163,92 @@ import useFetch from './useFetch';
       return resources.availability
     })
 
+    const amt = projectResources.map((resources) => {
+      return resources.checkedOut
+    })
 
-    
+    const [myRows, setRows] = useState(() => [
+      {label: "HWSet 1", id: 1, capacity: cap[0], available: ava[0], amount: amt[0]},
+      {label: "HWSet 2", id: 2, capacity: cap[1], available: ava[1], amount: amt[1]}
+    ]);
 
     const rows = [
-      {label: "HWSet 1", id: 1, capacity: cap[0], available: ava[0], amount: 0},
-      {label: "HWSet 2", id: 2, capacity: cap[1], available: ava[1], amount: 0}
-    ];
+      {label: "HWSet 1", id: 1, capacity: cap[0], available: ava[0], amount: amt[0]},
+      {label: "HWSet 2", id: 2, capacity: cap[1], available: ava[1], amount: amt[1]}
+    ]
+
+
+    const handleCheckIn = (event, cellValues) => {
+      if(cellValues.row.id == 1){
+        console.log(cellValues.row.id);
+        console.log(checkInVal1);
+        if(1 == 1){
+          const checkInForm = new FormData();
+          checkInForm.set('name', "HWSet1");
+          checkInForm.set('quantity', checkInVal1);
+          fetch(`/api/project/${id}/remove-resource`, {
+            method: 'POST',
+            body: checkInForm,
+          }).then(res => res.json()).then(data => console.log(data));
+        }
+        else{
+          alert("You're checking in too much!");
+        }
+        console.log(resourcePool);
+      }
+      else{
+        console.log(cellValues.row.id)
+        console.log(checkInVal2);
+        if(cellValues.row.capacity - cellValues.row.available >= checkInVal2){
+          const checkInForm = new FormData();
+          checkInForm.set('name', "HWSet2");
+          checkInForm.set('quantity', checkInVal2);
+          fetch(`/api/project/${id}/remove-resource`, {
+            method: 'POST',
+            body: checkInForm,
+          }).then(res => res.json()).then(data => console.log(data));
+        }
+        else{
+          alert("You're checking in too much!");
+        }
+      }
+    };
+
+    const handleCheckOut = (event, cellValues) => {
+      if(cellValues.row.id == 1){
+        console.log(cellValues.row.id)
+        console.log(checkOutVal1);
+        if(cellValues.row.available >= checkOutVal1){
+          const checkOutForm = new FormData();
+          checkOutForm.set('name', "HWSet1");
+          checkOutForm.set('quantity', checkOutVal1);
+          fetch(`/api/project/${id}/add-resource`, {
+            method: 'POST',
+            body: checkOutForm,
+          }).then(res => res.json()).then(data => console.log(data))
+        }
+        else{
+          alert("You're checking out too much!");
+        }
+        console.log(projectResources);
+      }
+      else{
+        console.log(cellValues.row.id)
+        console.log(checkOutVal2);
+        if(cellValues.row.available >= checkOutVal2){
+          const checkOutForm = new FormData();
+          checkOutForm.set('name', "HWSet2");
+          checkOutForm.set('quantity', checkOutVal2);
+          fetch(`/api/project/${id}/add-resource`, {
+            method: 'POST',
+            body: checkOutForm,
+          }).then(res => res.json()).then(data => console.log(data))
+        }
+        else{
+          alert("You're checking out too much!");
+        }
+      }
+    }
 
     return (
     <div>
