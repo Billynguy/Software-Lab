@@ -12,15 +12,21 @@ import useFetch from './useFetch';
   const Resources = () => {
 
     const { id } = useParams();
-    // const { data: project, error, isPending} = useFetch('http://localhost:8000/projects/' + id);
 
     const [checkInVal1, setCheckInVal1] = useState(0);
     const [checkOutVal1, setCheckOutVal1] = useState(0);
     const [checkInVal2, setCheckInVal2] = useState(0);
     const [checkOutVal2, setCheckOutVal2] = useState(0);
-    const [rowId, setRowId] = useState(null);
     const [projectResources, setProjectResources] = useState([]);
     const [resourcePool, setResourcePool] = useState([]);
+
+    let rows = [
+      {label: "HWSet 1", id: 1, capacity: 0, available: 1, amount: 2},
+      {label: "HWSet 2", id: 2, capacity: 3, available: 4, amount: 5}
+    ]
+
+    const [myRows, setRows] = useState(rows);
+
 
     useEffect(
       () => {
@@ -28,12 +34,13 @@ import useFetch from './useFetch';
           method: 'GET'
         }).then(res => res.json()).then(json => {
           setProjectResources(json.data.resources);
-        });
+        })
         fetch(`/api/resource/resource-info`, {
           method: 'GET'
         }).then(res => res.json()).then(json => {
           setResourcePool(json.data.resources);
-        })
+        }) 
+    
       }, []
     )
 
@@ -155,82 +162,125 @@ import useFetch from './useFetch';
       }
     ];
 
-    const cap = resourcePool.map((resources) => {
-      return resources.capacity
-    })
-
-    const ava = resourcePool.map((resources) => {
-      return resources.availability
-    })
-
-    const amt = projectResources.map((resources) => {
-      return resources.checkedOut
-    })
-
-    const [myRows, setRows] = useState(() => [
-      {label: "HWSet 1", id: 1, capacity: cap[0], available: ava[0], amount: amt[0]},
-      {label: "HWSet 2", id: 2, capacity: cap[1], available: ava[1], amount: amt[1]}
-    ]);
-
-    const rows = [
-      {label: "HWSet 1", id: 1, capacity: cap[0], available: ava[0], amount: amt[0]},
-      {label: "HWSet 2", id: 2, capacity: cap[1], available: ava[1], amount: amt[1]}
-    ]
-
-
     const handleCheckIn = (event, cellValues) => {
       if(cellValues.row.id == 1){
         console.log(cellValues.row.id);
         console.log(checkInVal1);
-        if(1 == 1){
+        if(cellValues.row.amount >= checkInVal1){
           const checkInForm = new FormData();
           checkInForm.set('name', "HWSet1");
           checkInForm.set('quantity', checkInVal1);
           fetch(`/api/project/${id}/remove-resource`, {
             method: 'POST',
             body: checkInForm,
-          }).then(res => res.json()).then(data => console.log(data));
+          }).then(res => {
+            fetch(`/api/project/${id}/resources`, {
+              method: 'GET'
+            }).then(res => res.json()).then(json => {
+              setProjectResources(json.data.resources);
+            })
+            fetch(`/api/resource/resource-info`, {
+              method: 'GET'
+            }).then(res => res.json()).then(json => {
+              setResourcePool(json.data.resources);
+            })
+          })
+          
         }
         else{
           alert("You're checking in too much!");
         }
-        console.log(resourcePool);
+        fetch(`/api/project/${id}/resources`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setProjectResources(json.data.resources);
+        })
+        fetch(`/api/resource/resource-info`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setResourcePool(json.data.resources);
+        })
       }
       else{
         console.log(cellValues.row.id)
         console.log(checkInVal2);
-        if(cellValues.row.capacity - cellValues.row.available >= checkInVal2){
+        if(cellValues.row.amount >= checkInVal2){
           const checkInForm = new FormData();
           checkInForm.set('name', "HWSet2");
           checkInForm.set('quantity', checkInVal2);
           fetch(`/api/project/${id}/remove-resource`, {
             method: 'POST',
             body: checkInForm,
-          }).then(res => res.json()).then(data => console.log(data));
+          }).then(res => {
+            fetch(`/api/project/${id}/resources`, {
+              method: 'GET'
+            }).then(res => res.json()).then(json => {
+              setProjectResources(json.data.resources);
+            })
+            fetch(`/api/resource/resource-info`, {
+              method: 'GET'
+            }).then(res => res.json()).then(json => {
+              setResourcePool(json.data.resources);
+            })
+          })
+          
         }
         else{
           alert("You're checking in too much!");
         }
+        fetch(`/api/project/${id}/resources`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setProjectResources(json.data.resources);
+        })
+        fetch(`/api/resource/resource-info`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setResourcePool(json.data.resources);
+        })
       }
+      
     };
 
     const handleCheckOut = (event, cellValues) => {
       if(cellValues.row.id == 1){
         console.log(cellValues.row.id)
         console.log(checkOutVal1);
-        if(cellValues.row.available >= checkOutVal1){
+        if(cellValues.row.available >= checkOutVal1 || 1 == 1){
           const checkOutForm = new FormData();
           checkOutForm.set('name', "HWSet1");
           checkOutForm.set('quantity', checkOutVal1);
           fetch(`/api/project/${id}/add-resource`, {
             method: 'POST',
             body: checkOutForm,
-          }).then(res => res.json()).then(data => console.log(data))
+          }).then(res => {
+            fetch(`/api/project/${id}/resources`, {
+              method: 'GET'
+            }).then(res => res.json()).then(json => {
+              setProjectResources(json.data.resources);
+            })
+            fetch(`/api/resource/resource-info`, {
+              method: 'GET'
+            }).then(res => res.json()).then(json => {
+              setResourcePool(json.data.resources);
+            })
+          })
+         
         }
         else{
           alert("You're checking out too much!");
         }
-        console.log(projectResources);
+        fetch(`/api/project/${id}/resources`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setProjectResources(json.data.resources);
+        })
+        fetch(`/api/resource/resource-info`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setResourcePool(json.data.resources);
+        })
+       
       }
       else{
         console.log(cellValues.row.id)
@@ -242,25 +292,69 @@ import useFetch from './useFetch';
           fetch(`/api/project/${id}/add-resource`, {
             method: 'POST',
             body: checkOutForm,
-          }).then(res => res.json()).then(data => console.log(data))
+          }).then(res => {
+            fetch(`/api/project/${id}/resources`, {
+              method: 'GET'
+            }).then(res => res.json()).then(json => {
+              setProjectResources(json.data.resources);
+            })
+            fetch(`/api/resource/resource-info`, {
+              method: 'GET'
+            }).then(res => res.json()).then(json => {
+              setResourcePool(json.data.resources);
+            })
+          })
         }
         else{
           alert("You're checking out too much!");
         }
+        fetch(`/api/project/${id}/resources`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setProjectResources(json.data.resources);
+        })
+        fetch(`/api/resource/resource-info`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setResourcePool(json.data.resources);
+        })
       }
     }
+
+    useEffect(() => {
+      const cap = resourcePool.map((resources) => {
+        return resources.capacity
+      })
+  
+      const ava = resourcePool.map((resources) => {
+        return resources.availability
+      })
+  
+      const amt = projectResources.map((resources) => {
+        return resources.checkedOut
+      })
+      console.log("Rows have been changed.");
+      console.log(resourcePool);
+      console.log(projectResources);
+      console.log(cap);
+      console.log(ava);
+      console.log(amt);
+      setRows([
+        {label: "HWSet 1", id: 1, capacity: cap[0], available: ava[0], amount: amt[0]},
+        {label: "HWSet 2", id: 2, capacity: cap[1], available: ava[1], amount: amt[1]}
+      ]);
+    }, [resourcePool, projectResources]);
 
     return (
     <div>
         <h1>Resource Management Page</h1>
         <Box b={{ height: 1000, width: '100%'}}>
           <DataGrid
-              rows={rows}
+              rows={myRows}
               columns={columns}
               pageSize={5}
               rowsPerPageOptions={[5]}
               autoHeight
-              onCellEditCommit={(params) => setRowId(params.id)}
           />
         </Box>
     </div>
