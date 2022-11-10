@@ -47,9 +47,10 @@ Unless otherwise specified, the json objects returned by these routes are of the
 
 | Rule | Method | Inputs | Description |
 | ---- | ------ | ------ | ----------- |
-| `/api/project/<string:projectid>/update-resources` | `POST` | `projectid` in route should exist; `session` user should be authorized; FormData containing `<hwset_name>-checkout` | On success, return no data. |
-| `/api/project/<string:projectid>/add-resource` | `POST` | `projectid` in route should exist; `session` user should be authorized; FormData containing `name` | On success, returns no data. |
-| `/api/project/<string:projectid>/remove-resource` | `POST` | `projectid` in route should exist; `session` user should be authorized; FormData containing `name` | On success, returns no data. |
+| `/api/project/<string:projectid>/update-resources-multiple` | `POST` | `projectid` in route should exist; `session` user should be authorized; FormData containing `<hwset_name>-checkout` | On success, return no data. |
+| `/api/project/<string:projectid>/update-resource` | `POST` | `projectid` in route should exist; `session` user should be authorized; FormData containing `name` and `quantity` | On success, return no data. |
+| `/api/project/<string:projectid>/add-resource` | `POST` | `projectid` in route should exist; `session` user should be authorized; FormData containing `name` and `quantity` | On success, returns no data. |
+| `/api/project/<string:projectid>/remove-resource` | `POST` | `projectid` in route should exist; `session` user should be authorized; FormData containing `name` and `quantity` | On success, returns no data. |
 | `/api/project/<string:projectid>/resources` | `GET` | `projectid` in route should exist; `session` user should be authorized  | On success, data contains `resources`, an array containing objects. These objects contain `name`, <br>if resource exists: `availability`, `checkedOut`, and `unused` (if `checkedOut` is 0), <br>if resource does not exist: `noSuchObject` always true. |
 
 ## Resource Routes
