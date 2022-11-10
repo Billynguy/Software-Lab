@@ -12,7 +12,7 @@ import useFetch from './useFetch';
   const Resources = () => {
 
     const { id } = useParams();
-    const { data: project, error, isPending} = useFetch('http://localhost:8000/projects/' + id);
+    // const { data: project, error, isPending} = useFetch('http://localhost:8000/projects/' + id);
 
     const [checkInVal1, setCheckInVal1] = useState(0);
     const [checkOutVal1, setCheckOutVal1] = useState(0);
@@ -20,17 +20,23 @@ import useFetch from './useFetch';
     const [checkOutVal2, setCheckOutVal2] = useState(0);
     const [rowId, setRowId] = useState(null);
     const [projectResources, setProjectResources] = useState([]);
-    const [resourcePool, setResourcePool] = useState([]);
+    const [resourcePool, setResourcePool] = useState(
+      []
+    );
 
     useEffect(
       () => {
         fetch(`/api/project/${id}/resources`, {
           method: 'GET'
         }).then(res => res.json()).then(json => {
-          setProjectResources(json.data);
+          setProjectResources(json.data.resources);
         });
-
-      }
+        fetch(`/api/resource/resource-info`, {
+          method: 'GET'
+        }).then(res => res.json()).then(json => {
+          setResourcePool(json.data.resources);
+        })
+      }, []
     )
 
     const changeCheckIn1 = (e) => {
@@ -51,20 +57,27 @@ import useFetch from './useFetch';
 
     const handleCheckIn = (event, cellValues) => {
       if(cellValues.row.id == 1){
-        console.log(cellValues.row.id)
+        console.log(cellValues.row.id);
         console.log(checkInVal1);
         if(cellValues.row.capacity - cellValues.row.available >= checkInVal1){
-
+          const checkInForm = new FormData();
+          checkInForm.set('name', "HWSet 1");
+          checkInForm.set('quantity', checkInVal1);
+          fetch()
         }
         else{
           alert("You're checking in too much!");
         }
+        console.log(resourcePool);
       }
       else{
         console.log(cellValues.row.id)
         console.log(checkInVal2);
         if(cellValues.row.capacity - cellValues.row.available >= checkInVal2){
-
+          const checkInForm = new FormData();
+          checkInForm.set('name', "HWSet 2");
+          checkInForm.set('quantity', checkInVal2);
+          fetch()
         }
         else{
           alert("You're checking in too much!");
@@ -77,7 +90,9 @@ import useFetch from './useFetch';
         console.log(cellValues.row.id)
         console.log(checkOutVal1);
         if(cellValues.row.available >= checkOutVal1){
-
+          const checkOutForm = new FormData();
+          checkOutForm.set('name', "HWSet 1");
+          checkOutForm.set('quantity', checkOutVal1);
         }
         else{
           alert("You're checking out too much!");
@@ -88,14 +103,17 @@ import useFetch from './useFetch';
         console.log(cellValues.row.id)
         console.log(checkOutVal2);
         if(cellValues.row.available >= checkOutVal2){
-
+          const checkOutForm = new FormData();
+          checkOutForm.set('name', "HWSet 2");
+          checkOutForm.set('quantity', checkOutVal2);
         }
         else{
           alert("You're checking out too much!");
         }
       }
-      
     }
+
+    
 
 
     //Columns and Rows
@@ -200,13 +218,21 @@ import useFetch from './useFetch';
       }
     ];
 
+    const cap = resourcePool.map((resources) => {
+      return resources.capacity
+    })
 
+    const ava = resourcePool.map((resources) => {
+      return resources.availability
+    })
+
+
+    
 
     const rows = [
-      {label: "HWSet 1", id: 1, capacity: 10000, available: 10000, amount: 0},
-      {label: "HWSet 2", id: 2, capacity: 10000, available: 7500, amount: 0}
+      {label: "HWSet 1", id: 1, capacity: cap[0], available: ava[0], amount: 0},
+      {label: "HWSet 2", id: 2, capacity: cap[1], available: ava[1], amount: 0}
     ];
-
 
     return (
     <div>
