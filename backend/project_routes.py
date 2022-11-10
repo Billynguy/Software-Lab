@@ -257,8 +257,8 @@ def project_revoke_user(projectid: str):
     }, 200)
 
 
-@project_bp.post('/project/<string:projectid>/update-resources')
-def project_update_resources(projectid: str):
+@project_bp.post('/project/<string:projectid>/update-resources-multiple')
+def project_update_resources_multiple(projectid: str):
     """Receive an update resources request.
 
     Verify that this request comes an authorized user and is valid within constraints.
@@ -314,8 +314,84 @@ def project_update_resources(projectid: str):
 
         if new_checked_out > old_checked_out:
             hwset.check_out(projectid, new_checked_out - old_checked_out)
-        elif old_checked_out < new_checked_out:
+        elif new_checked_out < old_checked_out:
             hwset.check_in(projectid, old_checked_out - new_checked_out)
+
+    return make_response({
+        'status': {
+            'success': True,
+        }
+    }, 200)
+
+
+@project_bp.post('/project/<string:projectid>/update-resource')
+def project_update_resource(projectid: str):
+    """Receive an update resource request.
+
+    Verify that this request comes an authorized user and is valid within constraints.
+    :return: json response detailing success or failure of updating resource
+    """
+
+    project = Project.load_project(projectid)
+    if project is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Project does not exist.',
+            }
+        }, 404)
+
+    # Verify that this request comes from an authorized user
+    if session.get('userid', None) == None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'User not signed in.',
+            }
+        }, 401)
+
+    if not project.has_user(session['userid']):
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Update request not from authorized user.',
+            }
+        }, 403)
+
+    # Verify that the request is valid within constraints
+    hwset = HWSet.load_hwset(request.form['name'])
+    if hwset is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Resource does not exist.',
+            }
+        }, 404)
+
+    old_checked_out = project.get_hwsets().get(request.form['name'], None)
+    if old_checked_out is None:
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Project is not using resource.',
+            }
+        }, 403)
+
+    new_checked_out = int(request.form['quantity'])
+
+    if new_checked_out < 0 or new_checked_out - old_checked_out > hwset.get_availability():
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Invalid resource request.'
+            }
+        }, 405)
+
+    # Request is ok
+    if new_checked_out > old_checked_out:
+        hwset.check_out(projectid, new_checked_out - old_checked_out)
+    elif new_checked_out < old_checked_out:
+        hwset.check_in(projectid, old_checked_out - new_checked_out)
 
     return make_response({
         'status': {
@@ -337,7 +413,7 @@ def project_add_resource(projectid: str):
         return make_response({
             'status': {
                 'success': False,
-                'reason': 'Project does not exist.'
+                'reason': 'Project does not exist.',
             }
         }, 404)
 
@@ -354,11 +430,11 @@ def project_add_resource(projectid: str):
         return make_response({
             'status': {
                 'success': False,
-                'reason': 'Add resource request not from authorized user.',
+                'reason': 'Update request not from authorized user.',
             }
         }, 403)
 
-    # Verify that the resource exists
+    # Verify that the request is valid within constraints
     hwset = HWSet.load_hwset(request.form['name'])
     if hwset is None:
         return make_response({
@@ -368,7 +444,19 @@ def project_add_resource(projectid: str):
             }
         }, 404)
 
-    hwset.check_out(projectid, 0)
+    check_out_amount = int(request.form['quantity'])
+
+    if check_out_amount < 0 or check_out_amount > hwset.get_availability():
+        return make_response({
+            'status': {
+                'success': False,
+                'reason': 'Invalid resource request.'
+            }
+        }, 405)
+
+    # Request is ok
+    hwset.check_out(projectid, check_out_amount)
+
     return make_response({
         'status': {
             'success': True,
@@ -389,7 +477,7 @@ def project_remove_resource(projectid: str):
         return make_response({
             'status': {
                 'success': False,
-                'reason': 'Project does not exist.'
+                'reason': 'Project does not exist.',
             }
         }, 404)
 
@@ -406,11 +494,11 @@ def project_remove_resource(projectid: str):
         return make_response({
             'status': {
                 'success': False,
-                'reason': 'Remove resource request not from authorized user.',
+                'reason': 'Update request not from authorized user.',
             }
         }, 403)
 
-    # Verify that the resource exists
+    # Verify that the request is valid within constraints
     hwset = HWSet.load_hwset(request.form['name'])
     if hwset is None:
         return make_response({
@@ -420,25 +508,19 @@ def project_remove_resource(projectid: str):
             }
         }, 404)
 
-    # Verify that the project is using this resource
-    if not hwset.has_project(projectid):
-        return make_response({
-            'status': {
-                'success': False,
-                'reason': 'Resource is not used by the project.',
-            }
-        }, 404)
+    check_in_amount = int(request.form['quantity'])
 
-    # Verify that the project is using 0 of this resource
-    if hwset.get_checked_out(projectid) != 0:
+    if check_in_amount < 0 or check_in_amount > project.get_hwsets().get(request.form['name'], 0):
         return make_response({
             'status': {
                 'success': False,
-                'reason': 'Project is currently using this resource.',
+                'reason': 'Invalid resource request.'
             }
         }, 405)
 
-    hwset.check_out(projectid, 0)
+    # Request is ok
+    hwset.check_in(projectid, check_in_amount)
+
     return make_response({
         'status': {
             'success': True,
