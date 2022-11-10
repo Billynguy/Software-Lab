@@ -81,7 +81,6 @@ const ProjectDetails = () => {
                         <h4>{projectItems.description}</h4>
                         {/* {projectItemsRender} */}
                         {resourceItemsRender}
-                    
                         <Link to={`/projects/${id}/resources`}>
                             <h2>Resource Page</h2>
                         </Link>
