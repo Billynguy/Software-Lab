@@ -66,27 +66,27 @@ import useFetch from './useFetch';
       {
         field: 'label',
         headerName: 'Name',
-        editable: true,
+        editable: false,
         flex: 1,
       },
       {
         field: 'capacity',
         headerName: 'Capacity',
-        editable: true,
+        editable: false,
         type: 'number',
         flex: 1,
       },
       {
         field: 'available',
         headerName: 'Available',
-        editable: true,
+        editable: false,
         type: 'number',
         flex: 1,
       },
       {
         field: 'amount',
         headerName: 'Amount',
-        editable: true,
+        editable: false,
         type: 'number',
         flex: 1,
       },
@@ -246,7 +246,7 @@ import useFetch from './useFetch';
       if(cellValues.row.id == 1){
         console.log(cellValues.row.id)
         console.log(checkOutVal1);
-        if(cellValues.row.available >= checkOutVal1 || 1 == 1){
+        if(cellValues.row.available >= checkOutVal1){
           const checkOutForm = new FormData();
           checkOutForm.set('name', "HWSet1");
           checkOutForm.set('quantity', checkOutVal1);
