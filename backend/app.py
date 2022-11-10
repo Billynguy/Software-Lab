@@ -1,14 +1,17 @@
-from flask import Flask
-from dotenv import load_dotenv
+from flask import Flask, send_from_directory
 import os
 import atexit
 
 
 # Entry point
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='', static_folder='../build/')
 
-    load_dotenv()
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def catch_all(path):
+        return send_from_directory('../build/', 'index.html')
+
     app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
     # Apply api blueprint, accessed through '/api' prefix
