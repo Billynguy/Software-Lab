@@ -6,11 +6,10 @@ ECE461L Software Lab Group consisting of Daniel Xie, Gaurav Belani, Billy Nguyen
 
 ### React Front-end
 0. You must have [Node.js](https://nodejs.org/en/) installed.
-1. Clone this repo with ``git clone https://github.com/evmaki/ee461-frontend-in-react.git``
-2. ``cd`` into ``ee461-frontend-in-react``
-3. Run ``npm install`` to install the project's dependencies (i.e. React and all the JS libraries it depends on).
-4. Once the dependencies are downloaded, run ``npm start`` to start the development server.
-5. You can access the interface while you're working on it at http://localhost:3000 in your web browser.
+1. Clone this repo with ``https://github.com/Billynguy/Software-Lab.git``
+2. Run ``npm install`` to install the project's dependencies (i.e. React and all the JS libraries it depends on).
+3. Once the dependencies are downloaded, run ``npm start`` to start the development server.
+4. You can access the interface while you're working on it at http://localhost:3000 in your web browser.
 
 ### Flask Back-end
 
