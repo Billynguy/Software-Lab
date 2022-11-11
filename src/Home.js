@@ -31,7 +31,8 @@ const Home = () => {
     return (  
         <div className="home">
             {/* <ul>{projectItemsRender}</ul> */}
-            {projectItemsRender}
+            {`You have ${projectItems.length} projects.`}
+            <ul>{projectItemsRender}</ul>
         </div>
 
     );  
