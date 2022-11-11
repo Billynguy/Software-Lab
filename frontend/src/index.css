@@ -36,3 +36,12 @@
 .project-preview a{
   text-decoration: none;
 }
+.App{
+  background: #fff3f3;
+  height: 100%;
+  background-size: cover;
+}
+body{
+  background: #fff3f3;
+  background-size: cover;
+}

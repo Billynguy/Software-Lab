@@ -10,7 +10,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Navbar from './Navbar';
 import Home from './Home';
 import Resources from './Resources';
-import "./index.css"
+import "./index.css";
 import Create from './Create';
 import ProjectDetails from './ProjectDetails';
 import LoginPage from './LoginPage';
