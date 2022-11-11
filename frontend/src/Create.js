@@ -5,7 +5,7 @@ const Create = () => {
     const [title, setTitle] = useState();
     const [id, setID] = useState();
     const [description, setDescription] = useState();
-    const [users, setUsers] = useState();
+    const [users, setUsers] = useState("");
     const [hwset1, setHwSet1] = useState(0);
     const [hwset2, setHwSet2] = useState(0);
     const history = useHistory();
@@ -60,10 +60,10 @@ const Create = () => {
                     else{
                         setDisplayPopupAddUser(false)
                     }
-                if (json.status.success){
-                    history.push('/home');  
-                }
-            });
+                    if (json.status.success){
+                        history.push('/home');  
+                    }
+                });
             
             }
         )
